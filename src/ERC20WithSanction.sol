@@ -29,12 +29,12 @@ contract ERC20WithSanction is ERC20, SanctionRoles {
     }
 
     modifier onlyOwner() {
-        if (owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
     modifier onlySanctionAdmin() {
-        if (pendingSanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_pendingSanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 

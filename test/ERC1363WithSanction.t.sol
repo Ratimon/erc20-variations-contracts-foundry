@@ -6,7 +6,7 @@ import {Test} from "@forge-std/Test.sol";
 import {RegisterScripts, console} from "../script/RegisterScripts.sol";
 
 import {Errors} from "../src/shared/Error.sol";
-import {ERC1363WithSanction} from "../src/ERC1363WithSanction.sol";
+import {IERC1363WithSanction} from "../src/interfaces/IERC1363WithSanction.sol";
 
 
 contract TestERC1363WithSanction is Test, RegisterScripts {
@@ -16,7 +16,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
     address carol = address(3);
     address dave = address(4);
 
-    ERC1363WithSanction tokenWithSanction;
+    IERC1363WithSanction ERC1363WithSanction;
 
     function setUpScripts() internal override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
@@ -40,7 +40,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         // inputs[1] = "void-deploy";
 
 
-        tokenWithSanction = ERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
+        ERC1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
     }
 
 
@@ -48,6 +48,9 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
     }
 
     function integrationTest_Deployment() internal view {
+
+        
+
     }
 
     function test_RevertWhen_No() public {
@@ -56,7 +59,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.expectRevert(
             abi.encodeWithSelector(Errors.NotAuthorized.selector, alice)
         );
-        tokenWithSanction.addToBlackList(bob);
+        ERC1363WithSanction.addToBlackList(bob);
 
         vm.stopPrank();
     }

@@ -16,12 +16,12 @@ contract SanctionRoles {
     event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
 
     ///@notice the address of the current owner, that is able to set new SanctionAdmin's address
-    address internal owner;
-    address internal pendingOwner;
+    address internal _owner;
+    address internal _pendingOwner;
 
     ///@notice the address which is able to ban specified addresses from sending and receiving tokens
-    address internal sanctionAdmin;
-    address internal pendingSanctionAdmin;
+    address internal _sanctionAdmin;
+    address internal _pendingSanctionAdmin;
 
 
     /**
@@ -36,8 +36,8 @@ contract SanctionRoles {
         if (initialOwner == address(0)) revert Errors.ZeroAddressNotAllowed();
         if (initialSanctionAdmin == address(0)) revert Errors.ZeroAddressNotAllowed();
 
-        owner = initialOwner;
-        sanctionAdmin = initialSanctionAdmin;
+        _owner = initialOwner;
+        _sanctionAdmin = initialSanctionAdmin;
         emit OwnershipTransferred(address(0), initialOwner);
         emit SanctionAdminSet(address(0), initialSanctionAdmin);
     }
@@ -47,22 +47,22 @@ contract SanctionRoles {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) external {
-        if (owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
+        if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
-        pendingOwner = newOwner;
-        emit OwnershipTransferStarted(owner, newOwner);
+        _pendingOwner = newOwner;
+        emit OwnershipTransferStarted(_owner, newOwner);
     }
 
     /**
      * @notice The new owner accepts the ownership transfer.
      */
     function acceptOwnership() external {
-        if (pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
+        if (_pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
-        delete pendingOwner;
-        address oldOwner = owner;
-        owner = msg.sender;
-        emit OwnershipTransferred(oldOwner, owner);
+        delete _pendingOwner;
+        address oldOwner = _owner;
+        _owner = msg.sender;
+        emit OwnershipTransferred(oldOwner, _owner);
     }
 
 
@@ -72,21 +72,21 @@ contract SanctionRoles {
      */
     function setSanctionAdmin(address newSanctionAdmin) external {
 
-        if ( (sanctionAdmin != msg.sender) && (owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
+        if ( (_sanctionAdmin != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
-        pendingSanctionAdmin = newSanctionAdmin;
-        emit SanctionAdminSetStarted(sanctionAdmin, newSanctionAdmin);
+        _pendingSanctionAdmin = newSanctionAdmin;
+        emit SanctionAdminSetStarted(_sanctionAdmin, newSanctionAdmin);
     }
 
     /**
      * @notice The new SanctionAdmin accepts the SanctionAdmin ownership transfer.
      */
     function acceptSanctionAdmin() external {
-        if (pendingSanctionAdmin != msg.sender) revert Errors.NotAuthorized(msg.sender);
+        if (_pendingSanctionAdmin != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
-        delete pendingSanctionAdmin;
-        address oldSanctionAdmin = sanctionAdmin;
-        sanctionAdmin = msg.sender;
-        emit SanctionAdminSet(oldSanctionAdmin, sanctionAdmin);
+        delete _pendingSanctionAdmin;
+        address oldSanctionAdmin = _sanctionAdmin;
+        _sanctionAdmin = msg.sender;
+        emit SanctionAdminSet(oldSanctionAdmin, _sanctionAdmin);
     }
 }

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
+
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-
+import {IERC1363WithSanction} from "./interfaces/IERC1363WithSanction.sol";
 import {Errors} from "./shared/Error.sol";
 import {ERC1363Base} from "./base/ERC1363Base.sol";
 import {SanctionRoles} from "./SanctionRoles.sol";
@@ -12,9 +13,9 @@ import {SanctionRoles} from "./SanctionRoles.sol";
 /**
  * @notice ERC1363 with sanctions. It allows an admin to ban specified addresses from sending and receiving tokens.
  */
-contract ERC1363WithSanction is ERC1363Base, SanctionRoles {
+contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles {
 
-    mapping (address => bool) isBlacklist;
+    mapping (address => bool) public isBlacklist;
 
     /**
      * @notice erc20 with sanction constructor
@@ -30,14 +31,27 @@ contract ERC1363WithSanction is ERC1363Base, SanctionRoles {
 
     }
 
-        modifier onlyOwner() {
-        if (owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+    modifier onlyOwner() {
+        if (_owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
     modifier onlySanctionAdmin() {
-        if (pendingSanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_pendingSanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
+    }
+
+    function owner() external view override returns (address) {
+        return _owner;
+    }
+    function pendingOwner() external view override returns (address){
+        return _pendingOwner;
+    }
+    function sanctionAdmin() external view override returns (address){
+        return _sanctionAdmin;
+    }
+    function pendingSanctionAdmin() external view override returns (address){
+        return _pendingSanctionAdmin;
     }
 
 
