@@ -46,11 +46,11 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     }
 
-    function unitTest() internal virtual {
+    function unitTest_Deployment() internal virtual {
 
     }
 
-    function integrationTest() internal view virtual {
+    function integrationTest_Deployment() internal view virtual {
 
     }
 

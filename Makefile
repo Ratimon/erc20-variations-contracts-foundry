@@ -24,6 +24,13 @@ production-deploy:
 	check-api-key
 	US_CONFIRM=true forge script ONE_deployERC1363WithSanction --rpc-url $(call network,mainnet)  -vvv --broadcast --ffi -t --sender $(call sender_address)
 
+
+fork-test-ERC1363WithSanction:
+	forge test --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
+
+# --match-test to filter test functions, --match-contract to filter test contracts, and --match-path
+# --mt
+
 check-api-key:
 ifndef ALCHEMY_API_KEY
 	$(error ALCHEMY_API_KEY is undefined)
