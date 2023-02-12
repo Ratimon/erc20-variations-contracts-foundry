@@ -37,7 +37,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     }
 
     modifier onlySanctionAdmin() {
-        if (_pendingSanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_sanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
@@ -69,6 +69,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
      */
     function addToBlackList(address _blacklist) external onlySanctionAdmin {
         isBlacklist[_blacklist] = true;
+        emit BlackListAdded(_blacklist);
     }
 
         /**
@@ -77,6 +78,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
      */
     function removeFromBlacklist(address _blacklist) external onlySanctionAdmin {
         isBlacklist[_blacklist] = false;
+        emit BlackListRemoved(_blacklist);
     }
 
 
