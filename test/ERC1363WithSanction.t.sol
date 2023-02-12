@@ -87,5 +87,33 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.stopPrank();
     }
 
+        function testFuzz_addToBlackList(uint256 amount_to_send) public {
+
+        amount_to_send = bound( amount_to_send, 0.5 ether, 9 ether);
+
+        
+        vm.startPrank(deployer);
+
+        vm.expectEmit(true,false,false,false);
+        emit BlackListAdded(bob);
+        ERC1363WithSanction.addToBlackList(bob);
+
+        vm.stopPrank();
+
+        vm.startPrank(bob);
+
+        deal({token : address(ERC1363WithSanction), to: bob, give: amount_to_send });
+
+        uint256 balance = IERC20(address(ERC1363WithSanction)).balanceOf(bob);
+        assertEq(balance, amount_to_send);
+        
+        vm.expectRevert(
+            bytes("The caller is on the blacklist")
+        );
+        IERC1363(address(ERC1363WithSanction)).transferAndCall(carol, amount_to_send);
+
+        vm.stopPrank();
+    }
+
 
 }
