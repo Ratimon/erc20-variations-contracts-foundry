@@ -43,13 +43,10 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         ERC1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
     }
 
+    function test_Constructor() public {
 
-    function unitTest_Deployment() internal view  {
-    }
-
-    function integrationTest_Deployment() internal view {
-
-        
+        assertEq(ERC1363WithSanction.owner(), msg.sender);
+        assertEq(ERC1363WithSanction.sanctionAdmin(), msg.sender);
 
     }
 

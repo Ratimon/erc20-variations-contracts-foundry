@@ -37,13 +37,8 @@ contract ONE_deployERC1363WithSanction is ERC1363WithSanctionSetupScript {
         // we don't need broadcast from here on
         vm.stopBroadcast();
 
-        if(SCRIPTS_MOCK_ADDRESS) {
-            // run an "unit test"
-            unitTest_Deployment();
-        } else {
-            // run an "integration test"
-            integrationTest_Deployment();
-        } 
+        if(SCRIPTS_MOCK_ADDRESS) unitTest_Deployment(); // run an "unit test"
+        else integrationTest_Deployment(); // run an "integration test"
 
         // console.log and store these in `deployments/` (if not in dry-run)
         storeLatestDeployments();

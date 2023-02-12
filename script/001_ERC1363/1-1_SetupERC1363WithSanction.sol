@@ -5,6 +5,7 @@ import {Test} from "@forge-std/Test.sol";
 import {RegisterScripts} from "../RegisterScripts.sol";
 
 import {Constants} from "../Constants.sol";
+import {IERC1363WithSanction} from "../../src/interfaces/IERC1363WithSanction.sol";
 
 
 contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
@@ -17,7 +18,9 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
         address  initialSanctionAdmin;
     }
 
-    Constructors ERC1363WithSanction;
+    Constructors arguments;
+    IERC1363WithSanction ERC1363WithSanction;
+
     /**
      * @dev SCRIPTS_MOCK_ADDRESS is hard-coded as false
      */
@@ -36,13 +39,14 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     function setUpHarness() private  {
 
-        ERC1363WithSanction.name = "Test Token";
-        ERC1363WithSanction.symbol = "TEST";
-        ERC1363WithSanction.initialOwner = msg.sender;
-        ERC1363WithSanction.initialSanctionAdmin = msg.sender;
+        arguments.name = "Test Token";
+        arguments.symbol = "TEST";
+        arguments.initialOwner = msg.sender;
+        arguments.initialSanctionAdmin = msg.sender;
 
-        bytes memory constructors = abi.encode(ERC1363WithSanction.name, ERC1363WithSanction.symbol,  ERC1363WithSanction.initialOwner, ERC1363WithSanction.initialSanctionAdmin);
-        setUpContract("ERC1363WithSanction",constructors, "ERC1363WithSanction");
+        bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
+        address deployed = setUpContract("ERC1363WithSanction",constructors, "ERC1363WithSanction");
+        ERC1363WithSanction = IERC1363WithSanction(deployed);
 
     }
 
@@ -50,7 +54,10 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     }
 
-    function integrationTest_Deployment() internal view virtual {
+    function integrationTest_Deployment() internal virtual {
+
+        assertEq(ERC1363WithSanction.owner(), arguments.initialOwner);
+        assertEq(ERC1363WithSanction.sanctionAdmin(), arguments.initialSanctionAdmin);
 
     }
 
