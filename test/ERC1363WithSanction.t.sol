@@ -81,7 +81,6 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
     }
 
     function testFuzz_addToBlackList(uint256 amount_to_send) public {
-
         amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
 
         vm.startPrank(deployer);
@@ -107,7 +106,6 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
     }
 
     function testFuzz_removeFromBlackList(uint256 amount_to_send) public {
-
         amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
 
         vm.startPrank(deployer);

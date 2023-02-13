@@ -13,6 +13,8 @@ import {Errors} from "../src/shared/Error.sol";
 contract TestERC1363WithGodmode is Test, RegisterScripts {
 
 
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
     address deployer;
     address alice = address(1);
     address bob = address(2);
@@ -43,6 +45,33 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
     function test_Constructor() public {
         assertEq(ERC1363WithGodmode.owner(), deployer);
         assertEq(ERC1363WithGodmode.god(), deployer);
+    }
+
+    function testFuzz_transferWithGodmode(uint256 amount_to_transfer) public {
+        amount_to_transfer = bound( amount_to_transfer, 0.5 ether, 200 ether);
+
+        vm.startPrank(deployer);
+
+        deal({token : address(ERC1363WithGodmode), to: alice, give: amount_to_transfer });
+        uint256 alicePreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(alice);
+        uint256 bobPreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(bob);
+
+
+        vm.expectEmit(true, true, false, true, address(ERC1363WithGodmode));
+        emit Transfer(alice, bob, amount_to_transfer);
+
+        ERC1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
+
+        uint256 alicePostBal = IERC20(address(ERC1363WithGodmode)).balanceOf(alice);
+        uint256 bobPostBal = IERC20(address(ERC1363WithGodmode)).balanceOf(bob);
+
+        uint256 changeInAliceBal = alicePostBal > alicePreBal ? (alicePostBal - alicePreBal) : (alicePreBal - alicePostBal);
+        uint256 changeInBobBal = bobPostBal > bobPreBal ? (bobPostBal - bobPreBal) : (bobPreBal - bobPostBal);
+
+        assertEq(changeInAliceBal,amount_to_transfer);
+        assertEq(changeInBobBal,amount_to_transfer);
+
+        vm.stopPrank();
     }
 
 
