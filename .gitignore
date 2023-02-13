@@ -9,10 +9,8 @@ out/
 /broadcast/*/1/
 /broadcast/**/dry-run/
 
-/development/test/*
-
-# Docs
-docs/
+# Ignores deployments
+/deployments/test/
 
 # Dotenv file
 .env
