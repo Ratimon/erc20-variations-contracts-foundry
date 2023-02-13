@@ -19,8 +19,10 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
 
     /**
      * @notice erc20 with sanction constructor
-     * @param name token name for ERC20
-     * @param symbol token symbol for ERC20
+     * @param name token name for ERC1363
+     * @param symbol token symbol for ERC1363
+     * @param initialOwner account for initial owner 
+     * @param initialSanctionAdmin account for initial owner sanctionAdmin
      */
     constructor(
         string memory name,
@@ -41,15 +43,30 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
         _;
     }
 
+    /**
+     * @notice Get the owner of the contract.
+    **/
     function owner() external view override returns (address) {
         return _owner;
     }
+
+    /**
+     * @notice Get the pending owner of the contract.
+    **/
     function pendingOwner() external view override returns (address){
         return _pendingOwner;
     }
+
+    /**
+     * @notice Get the sanction admin of the contract.
+    **/
     function sanctionAdmin() external view override returns (address){
         return _sanctionAdmin;
     }
+
+    /**
+     * @notice Get the pending sanction admin of the contract.
+    **/
     function pendingSanctionAdmin() external view override returns (address){
         return _pendingSanctionAdmin;
     }

@@ -9,6 +9,8 @@ out/
 /broadcast/*/1/
 /broadcast/**/dry-run/
 
+/development/test/*
+
 # Docs
 docs/
 
