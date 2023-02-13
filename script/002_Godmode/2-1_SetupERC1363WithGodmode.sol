@@ -5,21 +5,20 @@ import {Test} from "@forge-std/Test.sol";
 import {RegisterScripts} from "../RegisterScripts.sol";
 
 import {Constants} from "../Constants.sol";
-import {IERC1363WithSanction} from "../../src/interfaces/IERC1363WithSanction.sol";
+import {IERC1363WithGodmode} from "../../src/interfaces/IERC1363WithGodmode.sol";
 
 
-contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
-    
+contract ERC1363WithGodmodeSetupScript is Test, RegisterScripts, Constants  {
 
     struct Constructors {
         string name;
         string symbol;
         address initialOwner;
-        address initialSanctionAdmin;
+        address initialGod;
     }
 
     Constructors arguments;
-    IERC1363WithSanction ERC1363WithSanction;
+    IERC1363WithGodmode ERC1363WithGodmode;
 
     /**
      * @dev SCRIPTS_MOCK_ADDRESS is hard-coded as false
@@ -28,7 +27,6 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
         if (SCRIPTS_MOCK_ADDRESS) setUpMock();
         else setUpHarness();
     }
-
 
     /**
      * @dev There is no mocking contract here
@@ -39,14 +37,14 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     function setUpHarness() private  {
 
-        arguments.name = "Test Sanction Token";
-        arguments.symbol = "SANC";
+        arguments.name = "GOD Token";
+        arguments.symbol = "GOD";
         arguments.initialOwner = msg.sender;
-        arguments.initialSanctionAdmin = msg.sender;
+        arguments.initialGod = msg.sender;
 
-        bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
-        address deployed = setUpContract("ERC1363WithSanction",constructors, "ERC1363WithSanction");
-        ERC1363WithSanction = IERC1363WithSanction(deployed);
+        bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialGod);
+        address deployed = setUpContract("ERC1363WithGodmode",constructors, "ERC1363WithGodmode");
+        ERC1363WithGodmode = IERC1363WithGodmode(deployed);
 
     }
 
@@ -56,9 +54,10 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     function integrationTest_Deployment() internal virtual {
 
-        assertEq(ERC1363WithSanction.owner(), arguments.initialOwner);
-        assertEq(ERC1363WithSanction.sanctionAdmin(), arguments.initialSanctionAdmin);
+        assertEq(ERC1363WithGodmode.owner(), arguments.initialOwner);
+        assertEq(ERC1363WithGodmode.god(), arguments.initialGod);
 
     }
+
 
 }

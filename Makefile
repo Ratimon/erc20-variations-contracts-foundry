@@ -11,18 +11,22 @@ anvil-node:
 fork-node: 
 	ETH_RPC_URL=$(call network,mainnet) FORK_BLOCK_NUMBER=$(call block_number) LOCAL_CHAIN_ID=$(call local_chain_id)  bash ./utils/node.sh
 
-void-deploy:
+void-deploy-sanction:
 	make delete-deployment path1=test path2=1337; \
 	forge script ONE_deployERC1363WithSanction --rpc-url $(call local_network,8545)  -vvvv --broadcast --ffi; \
 
-fork-deploy:
-	make delete-deployment path1=test path2=1337
-	forge script ONE_deployERC1363WithSanction --rpc-url $(call local_network,8545)  -vvv --ffi
+void-deploy-god:
+	make delete-deployment path1=test path2=1337; \
+	forge script ONE_deployERC1363WithGodmode --rpc-url $(call local_network,8545)  -vvvv --broadcast --ffi; \
 
-production-deploy:
-	make delete-deployment path1=production path2=1
-	check-api-key
-	US_CONFIRM=true forge script ONE_deployERC1363WithSanction --rpc-url $(call network,mainnet)  -vvv --broadcast --ffi -t --sender $(call sender_address)
+# fork-deploy:
+# 	make delete-deployment path1=test path2=1337
+# 	forge script ONE_deployERC1363WithSanction --rpc-url $(call local_network,8545)  -vvv --ffi
+
+# production-deploy:
+# 	make delete-deployment path1=production path2=1
+# 	check-api-key
+# 	US_CONFIRM=true forge script ONE_deployERC1363WithSanction --rpc-url $(call network,mainnet)  -vvv --broadcast --ffi -t --sender $(call sender_address)
 
 
 fork-test-ERC1363WithSanction:
