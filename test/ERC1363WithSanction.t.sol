@@ -71,11 +71,9 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         ERC1363WithSanction.addToBlackList(bob);
 
         vm.stopPrank();
-
         vm.startPrank(bob);
 
         deal({token : address(ERC1363WithSanction), to: bob, give: 10 ether });
-
         uint256 balance = IERC20(address(ERC1363WithSanction)).balanceOf(bob);
         assertEq(balance, 10 ether);
         
@@ -87,11 +85,10 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.stopPrank();
     }
 
-        function testFuzz_addToBlackList(uint256 amount_to_send) public {
+    function testFuzz_addToBlackList(uint256 amount_to_send) public {
 
-        amount_to_send = bound( amount_to_send, 0.5 ether, 9 ether);
+        amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
 
-        
         vm.startPrank(deployer);
 
         vm.expectEmit(true,false,false,false);
@@ -99,7 +96,6 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         ERC1363WithSanction.addToBlackList(bob);
 
         vm.stopPrank();
-
         vm.startPrank(bob);
 
         deal({token : address(ERC1363WithSanction), to: bob, give: amount_to_send });
@@ -113,6 +109,33 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         IERC1363(address(ERC1363WithSanction)).transferAndCall(carol, amount_to_send);
 
         vm.stopPrank();
+    }
+
+    function testFuzz_removeFromBlackList(uint256 amount_to_send) public {
+
+        amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
+
+        vm.startPrank(deployer);
+
+        ERC1363WithSanction.addToBlackList(bob);
+        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
+
+        ERC1363WithSanction.removeFromBlacklist(bob);
+        assertEq(ERC1363WithSanction.isBlacklist(bob), false);
+
+        vm.stopPrank();
+        // vm.startPrank(bob);
+
+        // deal({token : address(ERC1363WithSanction), to: bob, give: amount_to_send });
+
+        // uint256 davePreBal = IERC20(address(ERC1363WithSanction)).balanceOf(dave);
+
+
+        // IERC1363(address(ERC1363WithSanction)).transferAndCall(dave, amount_to_send);
+        // uint256 davePostBal = IERC20(address(ERC1363WithSanction)).balanceOf(dave);
+        // assertEq(davePreBal+amount_to_send,davePostBal) ;
+
+        // vm.stopPrank();
     }
 
 

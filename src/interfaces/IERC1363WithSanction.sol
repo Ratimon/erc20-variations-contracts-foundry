@@ -14,6 +14,8 @@ interface IERC1363WithSanction {
     function sanctionAdmin() external view returns (address);
     function pendingSanctionAdmin() external view returns (address);
 
+    function isBlacklist(address blacklist) external returns (bool);
+
     function addToBlackList(address _blacklist) external ;
     function removeFromBlacklist(address _blacklist) external ;
 
