@@ -12,7 +12,6 @@ import {Errors} from "../src/shared/Error.sol";
 
 contract TestERC1363WithGodmode is Test, RegisterScripts {
 
-
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     address deployer;
@@ -47,16 +46,26 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
         assertEq(ERC1363WithGodmode.god(), deployer);
     }
 
+    function test_RevertWhen_NotAuthorized_transferWithGodmode() public {
+        uint256 amount_to_transfer = 1 ether;
+        vm.startPrank(carol);
+
+        deal({token : address(ERC1363WithGodmode), to: alice, give: amount_to_transfer });
+        vm.expectRevert(
+            abi.encodeWithSelector(Errors.NotAuthorized.selector, carol)
+        );
+        ERC1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
+
+        vm.stopPrank();
+    }
+
     function testFuzz_transferWithGodmode(uint256 amount_to_transfer) public {
         amount_to_transfer = bound( amount_to_transfer, 0.5 ether, 200 ether);
-
         vm.startPrank(deployer);
 
         deal({token : address(ERC1363WithGodmode), to: alice, give: amount_to_transfer });
         uint256 alicePreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(alice);
         uint256 bobPreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(bob);
-
-
         vm.expectEmit(true, true, false, true, address(ERC1363WithGodmode));
         emit Transfer(alice, bob, amount_to_transfer);
 
@@ -73,8 +82,4 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
 
         vm.stopPrank();
     }
-
-
-
-
 }
