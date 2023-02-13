@@ -15,6 +15,6 @@ interface IERC1363WithSanction {
     function isBlacklist(address blacklist) external returns (bool);
 
     function addToBlackList(address _blacklist) external ;
-    function removeFromBlacklist(address _blacklist) external ;
+    function removeFromBlacklist(address _blacklist) external;
 
 }

@@ -117,18 +117,6 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         assertEq(ERC1363WithSanction.isBlacklist(bob), false);
 
         vm.stopPrank();
-        // vm.startPrank(bob);
-
-        // deal({token : address(ERC1363WithSanction), to: bob, give: amount_to_send });
-
-        // uint256 davePreBal = IERC20(address(ERC1363WithSanction)).balanceOf(dave);
-
-
-        // IERC1363(address(ERC1363WithSanction)).transferAndCall(dave, amount_to_send);
-        // uint256 davePostBal = IERC20(address(ERC1363WithSanction)).balanceOf(dave);
-        // assertEq(davePreBal+amount_to_send,davePostBal) ;
-
-        // vm.stopPrank();
     }
 
 

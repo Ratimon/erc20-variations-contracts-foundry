@@ -32,6 +32,9 @@ void-deploy-god:
 unit-test-ERC1363WithSanction:
 	forge test --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
 
+unit-test-ERC1363WithSanction-role:
+	forge test --match-path test/ERC1363WithSanction.Roles.t.sol --fork-url  $(call local_network,8545) -vvv
+
 unit-test-ERC1363WithGodmode:
 	forge test --match-path test/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv
 
