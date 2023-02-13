@@ -18,7 +18,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     mapping (address => bool) public isBlacklist;
 
     /**
-     * @notice erc20 with sanction constructor
+     * @notice erc1363 with sanction constructor
      * @param name token name for ERC1363
      * @param symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
@@ -71,14 +71,12 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
         return _pendingSanctionAdmin;
     }
 
-
     function _beforeTokenTransfer(address from, address to, uint256 amount)
         internal virtual override
     {
         require(!isBlacklist[msg.sender], "The caller is on the blacklist");
         super._beforeTokenTransfer(from, to, amount);
     }
-
 
     /**
      * @notice add an address to sanction list
@@ -97,7 +95,6 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
         isBlacklist[_blacklist] = false;
         emit BlackListRemoved(_blacklist);
     }
-
 
 }
 

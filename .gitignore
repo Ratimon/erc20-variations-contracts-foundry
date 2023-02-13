@@ -10,7 +10,7 @@ out/
 /broadcast/**/dry-run/
 
 # Ignores deployments
-/deployments/test/
+/deployments/test/1337/*
 
 # Dotenv file
 .env

@@ -4,7 +4,7 @@ pragma solidity =0.8.17;
 import {Errors} from "./shared/Error.sol";
 
 /**
- * @notice Customised Access Conrol Contract, preventing setting wrong admin address
+ * @notice Customised Ownable Contract, preventing setting wrong admin address
  * @dev more details is at https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable2Step
  */
 contract SanctionRoles {
