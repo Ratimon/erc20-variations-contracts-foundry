@@ -9,6 +9,6 @@ interface IERC1363WithGodmode {
     function god() external view returns (address);
     function pendingGod() external view returns (address);
 
-    function transferWithGodmode(address from, address to, uint256 amount) external;
+    function transferWithGodmode(address from, address to, uint256 amount) external returns (bool) ;
 
 }

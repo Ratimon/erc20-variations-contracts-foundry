@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
 import {IERC1363WithSanction} from "./interfaces/IERC1363WithSanction.sol";
+
 import {Errors} from "./shared/Error.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC1363Base} from "./base/ERC1363Base.sol";
 import {SanctionRoles} from "./SanctionRoles.sol";
 
@@ -22,7 +21,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
      * @param name token name for ERC1363
      * @param symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
-     * @param initialSanctionAdmin account for initial owner sanctionAdmin
+     * @param initialSanctionAdmin account for initial sanctionAdmin
      */
     constructor(
         string memory name,
