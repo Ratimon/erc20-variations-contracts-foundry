@@ -64,6 +64,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.expectEmit(true,false,false,false);
         emit BlackListAdded(bob);
         ERC1363WithSanction.addToBlackList(bob);
+        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
         vm.startPrank(bob);
@@ -88,6 +89,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.expectEmit(true,false,false,false);
         emit BlackListAdded(bob);
         ERC1363WithSanction.addToBlackList(bob);
+        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
         vm.startPrank(bob);
