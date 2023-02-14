@@ -14,6 +14,7 @@ import {SanctionRoles} from "./SanctionRoles.sol";
  */
 contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles {
 
+    ///@notice the blacklist
     mapping (address => bool) public isBlacklist;
 
     /**

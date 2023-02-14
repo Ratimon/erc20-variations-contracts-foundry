@@ -19,10 +19,12 @@ contract GodRoles {
 
     ///@notice the address of the current owner, that is able to set new god's address
     address internal _owner;
+    ///@notice the pending address of the owner, that is able to set new god's address
     address internal _pendingOwner;
 
     ///@notice the address which is  is able to transfer tokens between addresses at will
     address internal _god;
+    ///@notice the pending address which is  is able to transfer tokens between addresses at will
     address internal _pendingGod;
 
     /**

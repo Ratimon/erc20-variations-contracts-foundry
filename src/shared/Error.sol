@@ -7,4 +7,5 @@ library Errors {
 
     error NotAuthorized(address caller);
 
+    error UnsupportedInterface();
 }
