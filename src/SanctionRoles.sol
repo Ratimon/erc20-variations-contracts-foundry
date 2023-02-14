@@ -9,6 +9,8 @@ import {Errors} from "./shared/Error.sol";
  */
 contract SanctionRoles {
 
+    // ----------- Events -----------
+
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
