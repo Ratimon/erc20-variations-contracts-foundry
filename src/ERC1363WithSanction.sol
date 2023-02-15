@@ -23,7 +23,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
      * @param symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
      * @param initialSanctionAdmin account for initial sanctionAdmin
-     */
+    **/
     constructor(
         string memory name,
         string memory symbol,
