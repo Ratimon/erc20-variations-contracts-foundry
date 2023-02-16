@@ -13,13 +13,17 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase {
     // @notice the ERC20 token sale for this bonding curve
     IERC20 public override immutable token;
 
-    // @notice the total amount of token purchased on bonding curve
+
+    /**
+     * @notice the total amount of token purchased on bonding curve
+    **/
     uint256 public override totalPurchased;
 
     /**
      * @notice BondingCurve constructor
-     * @param acceptedToken ERC20 token sale for this bonding curve
-     */
+     * @param acceptedToken ERC20 token in for this bonding curve
+     * @param _token ERC20 token sale out for this bonding curve
+    **/
     constructor(
         IERC1363 acceptedToken,
         IERC20 _token
