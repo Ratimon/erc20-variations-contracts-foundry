@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity  =0.8.17;
 
+import { UD60x18, ud } from "@prb-math/UD60x18.sol";
+
 abstract contract LinerCurve {
 
     /**
      * @notice the curve slope
      * @dev refer to price = slope * currentTokenPurchased + initialPrice
     **/
-    uint256 public immutable slope;
+    UD60x18 public immutable slope;
 
     /**
      * @notice the token price when there purchased token is zero
-     * @dev refer to price = slope * currentTokenPurchased + initialPrice
+     * @dev refer to the instantaneous price = slope * currentTokenPurchased + initialPrice
     **/
-    uint256 public immutable initialPrice;
+    UD60x18 public immutable initialPrice;
 
     /**
      * @notice BondingCurve constructor
@@ -24,16 +26,16 @@ abstract contract LinerCurve {
         uint256 _slope,
         uint256 _initialPrice
         ) {
-        slope =  _slope;
-        initialPrice = _initialPrice;
+        slope =  ud(_slope);
+        initialPrice = ud(_initialPrice);
     }
 
     /**
      * @notice return instantaneous bonding curve price
-     * @return amountOut price reported 
+     * @return the instantaneous price = slope * currentTokenPurchased + initialPrice
     **/
-    function getInstantaneousPrice() external pure returns (uint256){
-        return 1;
+    function getInstantaneousPrice(UD60x18 tokenSupply) external view returns (UD60x18){
+        return slope.mul(tokenSupply).add(initialPrice);
     }
 
         /**
@@ -42,11 +44,9 @@ abstract contract LinerCurve {
      * @return the total token price reported 
      * @dev integral of price regarding to tokensupply
     **/
-    function getPoolBalance(uint256 tokenSupply) external pure returns (uint256){
-        return 1;
+    function getPoolBalance(UD60x18 tokenSupply) external view returns (UD60x18){
+        return slope.mul(tokenSupply.powu(2)).div(ud(2)).add(tokenSupply.mul(initialPrice)) ;
     }
-
-
 
 
 }
