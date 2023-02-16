@@ -3,7 +3,7 @@ pragma solidity  =0.8.17;
 
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
-abstract contract LinerCurve {
+abstract contract LinearCurve {
 
     /**
      * @notice the curve slope
