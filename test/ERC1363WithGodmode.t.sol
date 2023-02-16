@@ -6,9 +6,9 @@ import {RegisterScripts, console} from "../script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
-import {IERC1363WithGodmode} from "../src/interfaces/IERC1363WithGodmode.sol";
+import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";
 
-import {Errors} from "../src/shared/Error.sol";
+import {Errors} from "@main/shared/Error.sol";
 
 contract TestERC1363WithGodmode is Test, RegisterScripts {
 

@@ -6,10 +6,10 @@ import {RegisterScripts, console} from "../script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
-import {IERC1363WithSanction} from "../src/interfaces/IERC1363WithSanction.sol";
+import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 
-import {Errors} from "../src/shared/Error.sol";
-import {SanctionRoles} from "../src/SanctionRoles.sol";
+import {Errors} from "@main/shared/Error.sol";
+import {SanctionRoles} from "@main/SanctionRoles.sol";
 
 contract TestERC1363WithSanctionRoles is Test, RegisterScripts {
 

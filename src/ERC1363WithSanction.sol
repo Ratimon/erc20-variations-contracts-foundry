@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {IERC1363WithSanction} from "./interfaces/IERC1363WithSanction.sol";
+import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 
-import {Errors} from "./shared/Error.sol";
+import {Errors} from "@main/shared/Error.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC1363Base} from "./base/ERC1363Base.sol";
-import {SanctionRoles} from "./SanctionRoles.sol";
+import {ERC1363Base} from "@main/base/ERC1363Base.sol";
+import {SanctionRoles} from "@main/SanctionRoles.sol";
 
 
 /**

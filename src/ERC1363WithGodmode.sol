@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {IERC1363WithGodmode} from "./interfaces/IERC1363WithGodmode.sol";
+import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";
 
-import {Errors} from "./shared/Error.sol";
+import {Errors} from "@main/shared/Error.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC1363Base} from "./base/ERC1363Base.sol";
-import {GodRoles} from "./GodRoles.sol";
+import {ERC1363Base} from "@main/base/ERC1363Base.sol";
+import {GodRoles} from "@main/GodRoles.sol";
 
 /**
  * @notice ERC1363 with god mode. It allows account with god role to transfer tokens between

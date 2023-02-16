@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Errors} from "./shared/Error.sol";
+import {Errors} from "@main/shared/Error.sol";
 
 /**
  * @notice Customised Ownable Contract, preventing setting wrong admin address

@@ -4,9 +4,9 @@ pragma solidity  =0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
-import {IBondingCurve} from "./interfaces/IBondingCurve.sol";
+import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 
-import {ERC1363PayableBase} from "./base/ERC1363PayableBase.sol";
+import {ERC1363PayableBase} from "@main/base/ERC1363PayableBase.sol";
 
 contract BondingCurve is IBondingCurve, ERC1363PayableBase {
 

@@ -5,7 +5,7 @@ import {Test} from "@forge-std/Test.sol";
 import {RegisterScripts} from "../RegisterScripts.sol";
 
 import {Constants} from "../Constants.sol";
-import {IERC1363WithSanction} from "../../src/interfaces/IERC1363WithSanction.sol";
+import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 
 
 contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {

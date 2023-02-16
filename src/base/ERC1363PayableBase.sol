@@ -6,7 +6,7 @@ import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC1363Spender} from "@openzeppelin/contracts/interfaces/IERC1363Spender.sol";
 
-import {Errors} from "../shared/Error.sol";
+import {Errors} from "@main/shared/Error.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
