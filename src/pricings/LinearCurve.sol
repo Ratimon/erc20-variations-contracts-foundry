@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity  =0.8.17;
 
-import { powu } from "src/ud60x18/Math.sol";
+import { powu } from "@prb-math/ud60x18/Math.sol";
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
 abstract contract LinearCurve {
