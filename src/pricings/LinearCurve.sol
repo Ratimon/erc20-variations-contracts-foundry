@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity  =0.8.17;
 
+import { powu } from "src/ud60x18/Math.sol";
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
 abstract contract LinearCurve {
@@ -42,10 +43,10 @@ abstract contract LinearCurve {
      * @notice return the pool balance or the amount of the reserve currency
      * @param tokenSupply the token supply
      * @return the total token price reported 
-     * @dev integral of price regarding to tokensupply
+     * @dev integral of price regarding to tokensupply : integral =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
     **/
     function getPoolBalance(UD60x18 tokenSupply) external view returns (UD60x18){
-        return slope.mul(tokenSupply.powu(2)).div(ud(2)).add(tokenSupply.mul(initialPrice)) ;
+        return slope.mul(powu(tokenSupply,2)).div(ud(2e18)).add(tokenSupply.mul(initialPrice)) ;
     }
 
 

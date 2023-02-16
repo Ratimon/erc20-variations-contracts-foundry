@@ -30,7 +30,7 @@ void-deploy-god:
 
 
 unit-test-LinearCurve:
-	forge test --match-path test/LinearCurve.t.sol
+	forge test --match-path test/LinearCurve.t.sol -vvv
 
 integration-test-ERC1363WithSanction:
 	forge test --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
