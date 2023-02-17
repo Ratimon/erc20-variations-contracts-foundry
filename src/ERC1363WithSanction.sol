@@ -38,21 +38,21 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     }
 
     modifier onlyOwner() {
-        if (_owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
     modifier onlySanctionAdmin() {
-        if (_sanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_sanctionAdmin != msg.sender) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
     modifier onlyMinter() {
-        if (_minter != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_minter != msg.sender) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
-    function mint(address to, uint256 amount) external onlyOwner {
+    function mint(address to, uint256 amount) external onlyMinter {
         _mint(to, amount);
     }
 

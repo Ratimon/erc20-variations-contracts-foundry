@@ -7,12 +7,4 @@ interface IERC1363WithGodmode {
 
     function transferWithGodmode(address from, address to, uint256 amount) external returns (bool);
 
-    // ----------- Getters -----------
-
-    function owner() external view returns (address);
-    function pendingOwner() external view returns (address);
-
-    function god() external view returns (address);
-    function pendingGod() external view returns (address);
-
 }

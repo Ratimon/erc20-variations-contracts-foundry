@@ -5,11 +5,13 @@ interface ISanctionRoles {
 
     // ----------- Governor only state changing api -----------
 
+    function transferOwnership(address newOwner) external;
     function setSanctionAdmin(address newSanctionAdmin) external;
     function setMinter(address newMinter) external;
 
     // ----------- State changing Api -----------
 
+    function acceptOwnership() external;
     function acceptSanctionAdmin() external;
     function acceptMinter() external;
 

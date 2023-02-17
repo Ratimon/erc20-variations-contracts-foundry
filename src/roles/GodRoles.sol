@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
+import {IGodRoles} from "@main/interfaces/IGodRoles.sol";
 import {Errors} from "@main/shared/Error.sol";
 
 /**
  * @notice Customised Ownable Contract, preventing setting wrong admin address
  * @dev more details is at https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable2Step
  */
-contract GodRoles {
+contract GodRoles is IGodRoles {
 
     // ----------- Events -----------
 
@@ -91,6 +92,34 @@ contract GodRoles {
         address oldGod = _god;
         _god = msg.sender;
         emit GodSet(oldGod, _god);
+    }
+
+    /**
+     * @notice Get the owner of the contract.
+    **/
+    function owner() external view override returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @notice Get the pending owner of the contract.
+    **/
+    function pendingOwner() external view override returns (address){
+        return _pendingOwner;
+    }
+
+    /**
+     * @notice Get the god of the contract.
+    **/
+    function god() external view override returns (address){
+        return _god;
+    }
+
+    /**
+     * @notice Get the pending god of the contract.
+    **/
+    function pendingGod() external view override returns (address){
+        return _pendingGod;
     }
 
 }

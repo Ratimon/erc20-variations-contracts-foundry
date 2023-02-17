@@ -49,34 +49,4 @@ contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
         return true;
     }
 
-    /**
-     * @notice Get the owner of the contract.
-    **/
-    function owner() external view override returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @notice Get the pending owner of the contract.
-    **/
-    function pendingOwner() external view override returns (address){
-        return _pendingOwner;
-    }
-
-    /**
-     * @notice Get the god of the contract.
-    **/
-    function god() external view override returns (address){
-        return _god;
-    }
-
-    /**
-     * @notice Get the pending god of the contract.
-    **/
-    function pendingGod() external view override returns (address){
-        return _pendingGod;
-    }
-
-
-
 }

@@ -6,6 +6,7 @@ import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
+import {GodRoles} from "@main/roles/GodRoles.sol";
 import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";
 
 import {Errors} from "@main/shared/Error.sol";
@@ -20,7 +21,7 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
     address carol = address(3);
     address dave = address(4);
 
-    IERC1363WithGodmode ERC1363WithGodmode;
+    IERC1363WithGodmode erc1363WithGodmode;
 
     function setUpScripts() internal override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
@@ -38,23 +39,23 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
         deal(alice, 1 ether);
         deal(bob, 1 ether);
 
-        ERC1363WithGodmode = IERC1363WithGodmode(loadSavedDeployedAddress('ERC1363WithGodmode'));
+        erc1363WithGodmode = IERC1363WithGodmode(loadSavedDeployedAddress('ERC1363WithGodmode'));
     }
 
     function test_Constructor() public {
-        assertEq(ERC1363WithGodmode.owner(), deployer);
-        assertEq(ERC1363WithGodmode.god(), deployer);
+        assertEq(GodRoles(address(erc1363WithGodmode)).owner(), deployer);
+        assertEq(GodRoles(address(erc1363WithGodmode)).god(), deployer);
     }
 
     function test_RevertWhen_NotAuthorized_transferWithGodmode() public {
         uint256 amount_to_transfer = 1 ether;
         vm.startPrank(carol);
 
-        deal({token : address(ERC1363WithGodmode), to: alice, give: amount_to_transfer });
+        deal({token : address(erc1363WithGodmode), to: alice, give: amount_to_transfer });
         vm.expectRevert(
             abi.encodeWithSelector(Errors.NotAuthorized.selector, carol)
         );
-        ERC1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
+        erc1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
 
         vm.stopPrank();
     }
@@ -63,16 +64,16 @@ contract TestERC1363WithGodmode is Test, RegisterScripts {
         amount_to_transfer = bound( amount_to_transfer, 0.5 ether, 200 ether);
         vm.startPrank(deployer);
 
-        deal({token : address(ERC1363WithGodmode), to: alice, give: amount_to_transfer });
-        uint256 alicePreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(alice);
-        uint256 bobPreBal = IERC20(address(ERC1363WithGodmode)).balanceOf(bob);
-        vm.expectEmit(true, true, false, true, address(ERC1363WithGodmode));
+        deal({token : address(erc1363WithGodmode), to: alice, give: amount_to_transfer });
+        uint256 alicePreBal = IERC20(address(erc1363WithGodmode)).balanceOf(alice);
+        uint256 bobPreBal = IERC20(address(erc1363WithGodmode)).balanceOf(bob);
+        vm.expectEmit(true, true, false, true, address(erc1363WithGodmode));
         emit Transfer(alice, bob, amount_to_transfer);
 
-        ERC1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
+        erc1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
 
-        uint256 alicePostBal = IERC20(address(ERC1363WithGodmode)).balanceOf(alice);
-        uint256 bobPostBal = IERC20(address(ERC1363WithGodmode)).balanceOf(bob);
+        uint256 alicePostBal = IERC20(address(erc1363WithGodmode)).balanceOf(alice);
+        uint256 bobPostBal = IERC20(address(erc1363WithGodmode)).balanceOf(bob);
 
         uint256 changeInAliceBal = alicePostBal > alicePreBal ? (alicePostBal - alicePreBal) : (alicePreBal - alicePostBal);
         uint256 changeInBobBal = bobPostBal > bobPreBal ? (bobPostBal - bobPreBal) : (bobPreBal - bobPostBal);
