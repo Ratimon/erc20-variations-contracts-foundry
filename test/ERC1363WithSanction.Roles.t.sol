@@ -49,6 +49,7 @@ contract TestERC1363WithSanctionRoles is Test, RegisterScripts {
         vm.expectEmit(true,true,false,false);
         emit SanctionAdminSetStarted(deployer,bob);
         SanctionRoles(address(ERC1363WithSanction)).setSanctionAdmin(bob);
+        
         assertEq(ERC1363WithSanction.sanctionAdmin(), deployer);
         assertEq(ERC1363WithSanction.pendingSanctionAdmin(), bob);
 

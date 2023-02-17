@@ -1,4 +1,5 @@
 @main/=src/
+@script/=script/
 @forge-std/=lib/forge-std/src/
 @openzeppelin/=lib/openzeppelin-contracts/
 @prb-math/=lib/prb-math/src/
