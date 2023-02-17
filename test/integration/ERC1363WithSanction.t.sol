@@ -7,7 +7,7 @@ import {Errors} from "@main/shared/Error.sol";
 import {TestUnitERC1363WithSanction} from "@test/unit/ERC1363WithSanction.t.sol";
 
 /**
- * @notice run `make void-deploy-sanction` before run testing command
+ * @notice run `make fork-node` then `make void-deploy-sanction` before run testing command
  */
 contract TestDeployScriptERC1363WithSanction is TestUnitERC1363WithSanction {
 
@@ -16,13 +16,14 @@ contract TestDeployScriptERC1363WithSanction is TestUnitERC1363WithSanction {
     }
 
     function setUp() public virtual override {
+        vm.label(address(this), "TestDeployScriptERC1363WithSanction");
 
         deployer = msg.sender;
         vm.label(deployer, "Deployer");
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
-        vm.label(address(this), "TestERC1363WithSanction");
+        
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
