@@ -17,14 +17,26 @@ contract SanctionRoles {
     event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
     event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
 
-    ///@notice the address of the current owner, that is able to set new SanctionAdmin's address
+    event MinterSetStarted(address indexed previousMinter, address indexed newMinter);
+    event MinterSet(address indexed previousMinter, address indexed newMinter);
+
+    /**
+     * @notice the address of the current owner, that is able to set new Sanction admin and minter
+    */  
     address internal _owner;
     address internal _pendingOwner;
 
-    ///@notice the address which is able to ban specified addresses from sending and receiving tokens
+    /**
+     * @notice the address which is able to ban specified addresses from sending and receiving tokens
+     */    
     address internal _sanctionAdmin;
     address internal _pendingSanctionAdmin;
 
+    /**
+     * @notice the address which is able to mint tokens eg. bonding curve contracr
+     */
+    address internal _minter;
+    address internal _pendingMinter;
 
     /**
      * @notice SanctionRoles constructor
@@ -33,15 +45,19 @@ contract SanctionRoles {
      */
     constructor(
         address initialOwner,
-        address initialSanctionAdmin
+        address initialSanctionAdmin,
+        address initialMinter
     ) {
         if (initialOwner == address(0)) revert Errors.ZeroAddressNotAllowed();
         if (initialSanctionAdmin == address(0)) revert Errors.ZeroAddressNotAllowed();
+        if (initialMinter == address(0)) revert Errors.ZeroAddressNotAllowed();
 
         _owner = initialOwner;
         _sanctionAdmin = initialSanctionAdmin;
+        _minter = initialMinter;
         emit OwnershipTransferred(address(0), initialOwner);
         emit SanctionAdminSet(address(0), initialSanctionAdmin);
+        emit MinterSet(address(0), initialMinter);
     }
 
     /**
@@ -91,5 +107,29 @@ contract SanctionRoles {
         address oldSanctionAdmin = _sanctionAdmin;
         _sanctionAdmin = msg.sender;
         emit SanctionAdminSet(oldSanctionAdmin, _sanctionAdmin);
+    }
+
+    /**
+     * @notice set the new minter
+     * Can only be called by either owner or the current minter.
+     */
+    function setMinter(address newMinter) external {
+        if ( (_minter != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
+
+        _minter = newMinter;
+        emit SanctionAdminSetStarted(_minter, newMinter);
+    }
+
+    /**
+     * @notice The new minter accepts the minter ownership transfer.
+     * Can only be called current minter.
+     */
+    function acceptMinter() external {
+        if (_pendingMinter != msg.sender) revert Errors.NotAuthorized(msg.sender);
+
+        delete _pendingMinter;
+        address oldMinter = _minter;
+        _minter = msg.sender;
+        emit SanctionAdminSet(oldMinter, _minter);
     }
 }

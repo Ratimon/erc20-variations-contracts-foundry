@@ -35,6 +35,9 @@ unit-test-LinearCurve:
 integration-test-ERC1363WithSanction:
 	forge test --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
 
+integration-coverage-ERC1363WithSanction:
+	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
+
 integration-test-ERC1363WithSanction-role:
 	forge test --match-path test/ERC1363WithSanction.Roles.t.sol --fork-url  $(call local_network,8545) -vvv
 

@@ -25,13 +25,15 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
      * @param symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
      * @param initialSanctionAdmin account for initial sanctionAdmin
+     * @param initialMinter account for initial minter eg. bonding curve or sale contract
     **/
     constructor(
         string memory name,
         string memory symbol,
         address  initialOwner,
-        address  initialSanctionAdmin
-        ) ERC20(name, symbol) SanctionRoles(initialOwner,initialSanctionAdmin) {
+        address  initialSanctionAdmin,
+        address  initialMinter
+        ) ERC20(name, symbol) SanctionRoles(initialOwner,initialSanctionAdmin, initialMinter)  {
 
     }
 
@@ -43,6 +45,15 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     modifier onlySanctionAdmin() {
         if (_sanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
+    }
+
+    modifier onlyMinter() {
+        if (_minter != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        _;
+    }
+
+    function mint(address to, uint256 amount) external onlyOwner {
+        _mint(to, amount);
     }
 
     /**

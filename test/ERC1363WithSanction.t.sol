@@ -38,7 +38,6 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
-
         ERC1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
     }
 
