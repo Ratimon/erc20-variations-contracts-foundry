@@ -19,7 +19,8 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
     }
 
     Constructors arguments;
-    IERC1363WithSanction ERC1363WithSanction;
+    
+    IERC1363WithSanction erc1363WithSanction;
 
     /**
      * @dev SCRIPTS_MOCK_ADDRESS is hard-coded as false
@@ -46,7 +47,7 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
         bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
         address deployed = setUpContract("ERC1363WithSanction",constructors, "ERC1363WithSanction");
-        ERC1363WithSanction = IERC1363WithSanction(deployed);
+        erc1363WithSanction = IERC1363WithSanction(deployed);
 
     }
 
@@ -56,8 +57,8 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     function integrationTest_Deployment() internal virtual {
 
-        assertEq(ERC1363WithSanction.owner(), arguments.initialOwner);
-        assertEq(ERC1363WithSanction.sanctionAdmin(), arguments.initialSanctionAdmin);
+        assertEq(erc1363WithSanction.owner(), arguments.initialOwner);
+        assertEq(erc1363WithSanction.sanctionAdmin(), arguments.initialSanctionAdmin);
 
     }
 

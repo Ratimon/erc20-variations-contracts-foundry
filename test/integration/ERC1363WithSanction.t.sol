@@ -15,19 +15,19 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
 
-    address deployer;
-    address alice = address(1);
-    address bob = address(2);
-    address carol = address(3);
-    address dave = address(4);
+    address public deployer;
+    address public alice = address(1);
+    address public bob = address(2);
+    address public carol = address(3);
+    address public dave = address(4);
 
-    IERC1363WithSanction ERC1363WithSanction;
+    IERC1363WithSanction erc1363WithSanction;
 
-    function setUpScripts() internal override {
+    function setUpScripts() internal virtual override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public {
+    function setUp() public virtual {
 
         deployer = msg.sender;
         vm.label(deployer, "Deployer");
@@ -38,12 +38,17 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
-        ERC1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
+        erc1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
     }
 
     function test_Constructor() public {
-        assertEq(ERC1363WithSanction.owner(), deployer);
-        assertEq(ERC1363WithSanction.sanctionAdmin(), deployer);
+        console.log('erc1363WithSanction.owner(', erc1363WithSanction.owner());
+        console.log('deployer', deployer);
+        console.log('msg.sender', msg.sender);
+
+
+        assertEq(erc1363WithSanction.owner(), deployer);
+        assertEq(erc1363WithSanction.sanctionAdmin(), deployer);
     }
 
     function test_RevertWhen_NotAuthorized_addToBlackList() public {
@@ -52,7 +57,7 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
         vm.expectRevert(
             abi.encodeWithSelector(Errors.NotAuthorized.selector, alice)
         );
-        ERC1363WithSanction.addToBlackList(bob);
+        erc1363WithSanction.addToBlackList(bob);
 
         vm.stopPrank();
     }
@@ -62,20 +67,20 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
 
         vm.expectEmit(true,false,false,false);
         emit BlackListAdded(bob);
-        ERC1363WithSanction.addToBlackList(bob);
-        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
+        erc1363WithSanction.addToBlackList(bob);
+        assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
         vm.startPrank(bob);
 
-        deal({token : address(ERC1363WithSanction), to: bob, give: 10 ether });
-        uint256 balance = IERC20(address(ERC1363WithSanction)).balanceOf(bob);
+        deal({token : address(erc1363WithSanction), to: bob, give: 10 ether });
+        uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, 10 ether);
         
         vm.expectRevert(
             bytes("The caller is on the blacklist")
         );
-        IERC1363(address(ERC1363WithSanction)).transferAndCall(carol, 2 ether);
+        IERC1363(address(erc1363WithSanction)).transferAndCall(carol, 2 ether);
 
         vm.stopPrank();
     }
@@ -87,21 +92,21 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
 
         vm.expectEmit(true,false,false,false);
         emit BlackListAdded(bob);
-        ERC1363WithSanction.addToBlackList(bob);
-        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
+        erc1363WithSanction.addToBlackList(bob);
+        assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
         vm.startPrank(bob);
 
-        deal({token : address(ERC1363WithSanction), to: bob, give: amount_to_send });
+        deal({token : address(erc1363WithSanction), to: bob, give: amount_to_send });
 
-        uint256 balance = IERC20(address(ERC1363WithSanction)).balanceOf(bob);
+        uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, amount_to_send);
         
         vm.expectRevert(
             bytes("The caller is on the blacklist")
         );
-        IERC1363(address(ERC1363WithSanction)).transferAndCall(carol, amount_to_send);
+        IERC1363(address(erc1363WithSanction)).transferAndCall(carol, amount_to_send);
 
         vm.stopPrank();
     }
@@ -111,11 +116,11 @@ contract TestERC1363WithSanction is Test, RegisterScripts {
 
         vm.startPrank(deployer);
 
-        ERC1363WithSanction.addToBlackList(bob);
-        assertEq(ERC1363WithSanction.isBlacklist(bob), true);
+        erc1363WithSanction.addToBlackList(bob);
+        assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
-        ERC1363WithSanction.removeFromBlacklist(bob);
-        assertEq(ERC1363WithSanction.isBlacklist(bob), false);
+        erc1363WithSanction.removeFromBlacklist(bob);
+        assertEq(erc1363WithSanction.isBlacklist(bob), false);
 
         vm.stopPrank();
     }

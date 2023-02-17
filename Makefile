@@ -34,6 +34,9 @@ fork-test-sample:
 unit-test-LinearCurve:
 	forge test --match-path test/unit/LinearCurve.t.sol -vvv
 
+unit-test-ERC1363WithSanction:
+	forge test --match-path test/unit/ERC1363WithSanction.t.sol -vvv
+
 integration-test-ERC1363WithSanction:
 	forge test --match-path test/integration/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
 
