@@ -28,14 +28,15 @@ void-deploy-god:
 # 	check-api-key
 # 	US_CONFIRM=true forge script ONE_deployERC1363WithSanction --rpc-url $(call network,mainnet)  -vvv --broadcast --ffi -t --sender $(call sender_address)
 
-fork-test-sample:
-	forge test --match-path test/fork.t.sol -vvv
 
-unit-test-LinearCurve:
-	forge test --match-path test/unit/LinearCurve.t.sol -vvv
+unit-test-ERC1363WithSanctionRoles:
+	forge test --match-path test/unit/ERC1363WithSanction.Roles.t.sol -vvv
 
 unit-test-ERC1363WithSanction:
 	forge test --match-path test/unit/ERC1363WithSanction.t.sol -vvv
+
+unit-test-LinearCurve:
+	forge test --match-path test/unit/LinearCurve.t.sol -vvv
 
 integration-test-ERC1363WithSanction:
 	forge test --match-path test/integration/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
@@ -43,8 +44,6 @@ integration-test-ERC1363WithSanction:
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 
-integration-test-ERC1363WithSanction-role:
-	forge test --match-path test/integration/ERC1363WithSanction.Roles.t.sol --fork-url  $(call local_network,8545) -vvv
 
 integration-test-ERC1363WithGodmode:
 	forge test --match-path test/integration/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv

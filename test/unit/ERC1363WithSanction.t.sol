@@ -6,7 +6,10 @@ import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
+import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
+
+
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 
 import {Errors} from "@main/shared/Error.sol";
@@ -22,8 +25,6 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
     address public carol = address(3);
     address public dave = address(4);
 
-    IERC1363WithSanction erc1363WithSanction;
-
     struct Constructors {
         string name;
         string symbol;
@@ -31,21 +32,21 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         address initialSanctionAdmin;
         address initialMinter;
     }
-
     Constructors arguments;
+    IERC1363WithSanction erc1363WithSanction;
 
     function setUpScripts() internal virtual override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
     function setUp() public virtual {
+        vm.label(address(this), "TestUnitERC1363WithSanction");
 
         deployer = msg.sender;
         vm.label(deployer, "Deployer");
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
-        vm.label(address(this), "TestERC1363WithSanction");
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
@@ -57,18 +58,11 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         arguments.initialMinter = msg.sender;
 
         erc1363WithSanction = new ERC1363WithSanction(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin, arguments.initialMinter);
-
-        // erc1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
     }
 
     function test_Constructor() public {
-        console.log('erc1363WithSanction.owner(', erc1363WithSanction.owner());
-        console.log('deployer', deployer);
-        console.log('msg.sender', msg.sender);
-
-
-        assertEq(erc1363WithSanction.owner(), deployer);
-        assertEq(erc1363WithSanction.sanctionAdmin(), deployer);
+        assertEq(ISanctionRoles(address(erc1363WithSanction)).owner(), deployer);
+        assertEq(ISanctionRoles(address(erc1363WithSanction)).sanctionAdmin(), deployer);
     }
 
     function test_RevertWhen_NotAuthorized_addToBlackList() public {

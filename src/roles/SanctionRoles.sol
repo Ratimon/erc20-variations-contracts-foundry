@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
+import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 import {Errors} from "@main/shared/Error.sol";
 
 /**
  * @notice Customised Ownable Contract, preventing setting wrong admin address
  * @dev more details is at https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable2Step
  */
-contract SanctionRoles {
+contract SanctionRoles is ISanctionRoles{
 
     // ----------- Events -----------
 
@@ -132,4 +133,47 @@ contract SanctionRoles {
         _minter = msg.sender;
         emit SanctionAdminSet(oldMinter, _minter);
     }
+
+    /**
+     * @notice Get the owner of the contract.
+    **/
+    function owner() external view override returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @notice Get the pending owner of the contract.
+    **/
+    function pendingOwner() external view override returns (address){
+        return _pendingOwner;
+    }
+    
+    /**
+     * @notice Get the sanction admin of the contract.
+    **/
+    function sanctionAdmin() external view override returns (address){
+        return _sanctionAdmin;
+    }
+
+    /**
+     * @notice Get the pending sanction admin of the contract.
+    **/
+    function pendingSanctionAdmin() external view override returns (address){
+        return _pendingSanctionAdmin;
+    }
+
+    /**
+     * @notice Get the minter of the contract.
+    **/
+    function minter() external view override returns (address){
+        return _minter;
+    }
+
+    /**
+     * @notice Get the pending minter of the contract.
+    **/
+    function pendingMinter() external view override returns (address){
+        return _pendingMinter;
+    }
+
 }

@@ -18,13 +18,8 @@ interface IERC1363WithSanction {
     function removeFromBlacklist(address _blacklist) external;
 
     // ----------- Getters -----------
-
-    function owner() external view returns (address);
-    function pendingOwner() external view returns (address);
-
-    function sanctionAdmin() external view returns (address);
-    function pendingSanctionAdmin() external view returns (address);
-
+    
     function isBlacklist(address blacklist) external returns (bool);
+
 
 }

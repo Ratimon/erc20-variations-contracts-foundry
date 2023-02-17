@@ -21,19 +21,19 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
 
     /**
      * @notice erc1363 with sanction constructor
-     * @param name token name for ERC1363
-     * @param symbol token symbol for ERC1363
+     * @param _name token name for ERC1363
+     * @param _symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
      * @param initialSanctionAdmin account for initial sanctionAdmin
      * @param initialMinter account for initial minter eg. bonding curve or sale contract
     **/
     constructor(
-        string memory name,
-        string memory symbol,
+        string memory _name,
+        string memory _symbol,
         address  initialOwner,
         address  initialSanctionAdmin,
         address  initialMinter
-        ) ERC20(name, symbol) SanctionRoles(initialOwner,initialSanctionAdmin, initialMinter)  {
+        ) ERC20(_name, _symbol) SanctionRoles(initialOwner,initialSanctionAdmin, initialMinter)  {
 
     }
 
@@ -72,34 +72,6 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     function removeFromBlacklist(address _blacklist) external onlySanctionAdmin {
         isBlacklist[_blacklist] = false;
         emit BlackListRemoved(_blacklist);
-    }
-
-    /**
-     * @notice Get the owner of the contract.
-    **/
-    function owner() external view override returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @notice Get the pending owner of the contract.
-    **/
-    function pendingOwner() external view override returns (address){
-        return _pendingOwner;
-    }
-
-    /**
-     * @notice Get the sanction admin of the contract.
-    **/
-    function sanctionAdmin() external view override returns (address){
-        return _sanctionAdmin;
-    }
-
-    /**
-     * @notice Get the pending sanction admin of the contract.
-    **/
-    function pendingSanctionAdmin() external view override returns (address){
-        return _pendingSanctionAdmin;
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount)
