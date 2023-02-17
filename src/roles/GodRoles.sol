@@ -58,6 +58,7 @@ contract GodRoles {
 
     /**
      * @notice The new owner accepts the ownership transfer.
+     * Can only be called current owner.
      */
     function acceptOwnership() external {
         if (_pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
@@ -69,11 +70,10 @@ contract GodRoles {
     }
 
     /**
-     * @notice Starts the new God  that is able to ban specified addresses from sending and receiving tokens
-     * Can only be called by ether owner or the current God admin.
+     * @notice set the new God
+     * Can only be called by ether owner or the current god.
      */
     function setGod(address newGod) external {
-
         if ( (_god != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
         _pendingGod = newGod;
@@ -82,6 +82,7 @@ contract GodRoles {
 
     /**
      * @notice The new God accepts the God ownership transfer.
+     * Can only be called current god.
      */
     function acceptGod() external {
         if (_pendingGod != msg.sender) revert Errors.NotAuthorized(msg.sender);

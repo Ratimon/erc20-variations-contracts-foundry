@@ -8,6 +8,12 @@ interface IBondingCurve {
 
     // ----------- State changing Api -----------
 
+    // ----------- Governor only state changing api -----------
+
+    function pause() external;
+
+    function unpause() external;
+
     // ----------- Getters -----------
 
     function getCurrentPrice() external view returns (uint256);

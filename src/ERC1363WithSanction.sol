@@ -14,7 +14,6 @@ import {SanctionRoles} from "@main/roles/SanctionRoles.sol";
  */
 contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles {
 
-
     /**
      * @notice the blacklist
     **/
@@ -44,6 +43,24 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     modifier onlySanctionAdmin() {
         if (_sanctionAdmin != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
         _;
+    }
+
+    /**
+     * @notice add an address to sanction list
+     * @param _blacklist account to be sanctioned
+     */
+    function addToBlackList(address _blacklist) external onlySanctionAdmin {
+        isBlacklist[_blacklist] = true;
+        emit BlackListAdded(_blacklist);
+    }
+
+        /**
+     * @notice remove an address to sanction list
+     * @param _blacklist account to be sanctioned
+     */
+    function removeFromBlacklist(address _blacklist) external onlySanctionAdmin {
+        isBlacklist[_blacklist] = false;
+        emit BlackListRemoved(_blacklist);
     }
 
     /**
@@ -79,24 +96,6 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
     {
         require(!isBlacklist[msg.sender], "The caller is on the blacklist");
         super._beforeTokenTransfer(from, to, amount);
-    }
-
-    /**
-     * @notice add an address to sanction list
-     * @param _blacklist account to be sanctioned
-     */
-    function addToBlackList(address _blacklist) external onlySanctionAdmin {
-        isBlacklist[_blacklist] = true;
-        emit BlackListAdded(_blacklist);
-    }
-
-        /**
-     * @notice remove an address to sanction list
-     * @param _blacklist account to be sanctioned
-     */
-    function removeFromBlacklist(address _blacklist) external onlySanctionAdmin {
-        isBlacklist[_blacklist] = false;
-        emit BlackListRemoved(_blacklist);
     }
 
 }

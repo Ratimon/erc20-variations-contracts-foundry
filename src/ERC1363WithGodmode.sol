@@ -31,13 +31,22 @@ contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
     }
 
     modifier onlyOwner() {
-        if (_owner != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
         _;
     }
 
     modifier onlyGod() {
-        if (_god != msg.sender  ) revert Errors.NotAuthorized(msg.sender);
+        if (_god != msg.sender) revert Errors.NotAuthorized(msg.sender);
         _;
+    }
+
+    /**
+     * @notice transfer tokens between addresses at will
+     * @return bool whether the trasfer is success or not
+    **/
+    function transferWithGodmode(address from, address to, uint256 amount) external onlyGod returns (bool)  {
+        _transfer(from, to, amount);
+        return true;
     }
 
     /**
@@ -68,13 +77,6 @@ contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
         return _pendingGod;
     }
 
-    /**
-     * @notice transfer tokens between addresses at will
-     * @return bool whether the trasfer is success or not
-    **/
-    function transferWithGodmode(address from, address to, uint256 amount) external onlyGod returns (bool)  {
-        _transfer(from, to, amount);
-        return true;
-    }
+
 
 }

@@ -57,6 +57,7 @@ contract SanctionRoles {
 
     /**
      * @notice The new owner accepts the ownership transfer.
+     * Can only be called current owner.
      */
     function acceptOwnership() external {
         if (_pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
@@ -69,11 +70,10 @@ contract SanctionRoles {
 
 
     /**
-     * @notice Starts the new SanctionAdmin  that is able to ban specified addresses from sending and receiving tokens
-     * Can only be called by ether owner or the current sanctionAdmin admin.
+     * @notice set the new SanctionAdmin
+     * Can only be called by either owner or the current sanctionAdmin admin.
      */
     function setSanctionAdmin(address newSanctionAdmin) external {
-
         if ( (_sanctionAdmin != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
         _pendingSanctionAdmin = newSanctionAdmin;
@@ -82,6 +82,7 @@ contract SanctionRoles {
 
     /**
      * @notice The new SanctionAdmin accepts the SanctionAdmin ownership transfer.
+     * Can only be called current sanctionAdmin admin.
      */
     function acceptSanctionAdmin() external {
         if (_pendingSanctionAdmin != msg.sender) revert Errors.NotAuthorized(msg.sender);

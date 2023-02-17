@@ -8,7 +8,7 @@ interface IERC1363WithSanction {
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
 
-     // ----------- Governor only state changing api -----------
+    // ----------- Governor only state changing api -----------
 
     function addToBlackList(address _blacklist) external ;
     function removeFromBlacklist(address _blacklist) external;

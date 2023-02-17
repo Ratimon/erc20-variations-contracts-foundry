@@ -7,8 +7,10 @@ import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 
 import {ERC1363PayableBase} from "@main/base/ERC1363PayableBase.sol";
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-contract BondingCurve is IBondingCurve, ERC1363PayableBase {
+contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, Ownable2Step {
 
     // @notice the ERC20 token sale for this bonding curve
     IERC20 public override immutable token;
@@ -29,7 +31,14 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase {
         ) ERC1363PayableBase(acceptedToken){
 
         token = _token;
+    }
 
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     /**
@@ -52,7 +61,6 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase {
         returns (uint256 amountOut) {
             return 1;
     }
-
 
     /**
      *@notice balance of the bonding curve
