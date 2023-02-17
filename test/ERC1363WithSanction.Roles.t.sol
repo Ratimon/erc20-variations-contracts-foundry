@@ -9,7 +9,7 @@ import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 
 import {Errors} from "@main/shared/Error.sol";
-import {SanctionRoles} from "@main/SanctionRoles.sol";
+import {SanctionRoles} from "@main/roles/SanctionRoles.sol";
 
 contract TestERC1363WithSanctionRoles is Test, RegisterScripts {
 

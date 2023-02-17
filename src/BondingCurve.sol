@@ -13,7 +13,6 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase {
     // @notice the ERC20 token sale for this bonding curve
     IERC20 public override immutable token;
 
-
     /**
      * @notice the total amount of token purchased on bonding curve
     **/
@@ -36,6 +35,7 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase {
     /**
      * @notice return current instantaneous bonding curve price
      * @return amountOut price reported 
+     * @dev just use only one helper function from LinearCurve
     **/
     function getCurrentPrice() external view returns (uint256){
         return 1;

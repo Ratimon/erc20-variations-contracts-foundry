@@ -6,6 +6,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface IBondingCurve {
     // ----------- Events -----------
 
+    // ----------- State changing Api -----------
+
     // ----------- Getters -----------
 
     function getCurrentPrice() external view returns (uint256);

@@ -6,7 +6,7 @@ import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 import {Errors} from "@main/shared/Error.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC1363Base} from "@main/base/ERC1363Base.sol";
-import {SanctionRoles} from "@main/SanctionRoles.sol";
+import {SanctionRoles} from "@main/roles/SanctionRoles.sol";
 
 
 /**
