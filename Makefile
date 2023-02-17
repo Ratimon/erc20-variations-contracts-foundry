@@ -32,22 +32,19 @@ fork-test-sample:
 	forge test --match-path test/fork.t.sol -vvv
 
 unit-test-LinearCurve:
-	forge test --match-path test/LinearCurve.t.sol -vvv
+	forge test --match-path test/unit/LinearCurve.t.sol -vvv
 
 integration-test-ERC1363WithSanction:
-	forge test --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
-
-integration-coverage-ERC1363WithSanction:
-	forge coverage --match-path test/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
+	forge test --match-path test/integration/ERC1363WithSanction.t.sol --fork-url  $(call local_network,8545) -vvv
 
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 
 integration-test-ERC1363WithSanction-role:
-	forge test --match-path test/ERC1363WithSanction.Roles.t.sol --fork-url  $(call local_network,8545) -vvv
+	forge test --match-path test/integration/ERC1363WithSanction.Roles.t.sol --fork-url  $(call local_network,8545) -vvv
 
 integration-test-ERC1363WithGodmode:
-	forge test --match-path test/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv
+	forge test --match-path test/integration/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv
 
 # --match-test to filter test functions, --match-contract to filter test contracts, and --match-path
 # --mt
