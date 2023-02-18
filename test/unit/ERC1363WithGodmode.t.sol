@@ -6,12 +6,12 @@ import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
-import {GodRoles} from "@main/roles/GodRoles.sol";
 import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";
 
+import {Errors} from "@main/shared/Error.sol";
+import {GodRoles} from "@main/roles/GodRoles.sol";
 import {ERC1363WithGodmode} from "@main/ERC1363WithGodmode.sol";
 
-import {Errors} from "@main/shared/Error.sol";
 
 contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
 
@@ -47,8 +47,6 @@ contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
-
-        // erc1363WithGodmode = IERC1363WithGodmode(loadSavedDeployedAddress('ERC1363WithGodmode'));
 
         arguments.name = "Test Sanction Token";
         arguments.symbol = "SANC";

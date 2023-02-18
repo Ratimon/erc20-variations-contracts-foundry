@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: MIT
+pragma solidity =0.8.17;
+
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
+import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
+
+import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
+import {LinearCurve} from "@main/pricings/LinearCurve.sol";
+
+
+contract LinearBondingCurve is BondingCurve, LinearCurve {
+
+    /**
+     * @notice linear bondingCurve constructor
+     * @param _acceptedToken ERC20 token in for this bonding curve
+     * @param _token ERC20 token sale out for this bonding curve
+     * @param _mintCap maximum token sold for this bonding curve to ensure security
+     * @param _slope slope for this bonding curve
+     * @param _initialPrice initial price for this bonding curve
+     */
+    constructor(
+        IERC1363 _acceptedToken,
+        IERC20 _token,
+        uint256 _mintCap,
+        uint256 _slope,
+        uint256 _initialPrice
+        ) BondingCurve(_acceptedToken,_token,_mintCap) LinearCurve(_slope, _initialPrice){
+
+    }
+
+    /**
+     * @notice return current instantaneous bonding curve price
+     * @return amountOut price reported 
+     * @dev just use only one helper function from LinearCurve
+    **/
+    function getCurrentPrice() external view override returns (uint256){
+        return getLinearInstantaneousPrice(totalPurchased);
+    }
+
+    /**
+     * @notice return amount of token received after a bonding curve purchase
+     * @param amountIn the amount of underlying used to purchase
+     * @return amountOut the amount of token received
+    **/
+    function getAmountOut(uint256 amountIn)
+        public
+        view
+        override
+        returns(uint256) {
+        
+    }
+
+
+
+
+}
+

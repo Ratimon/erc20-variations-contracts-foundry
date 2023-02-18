@@ -50,7 +50,6 @@ contract TestUnitERC1363WithSanctionRoles is Test, RegisterScripts {
         arguments.initialMinter = msg.sender;
 
         sanctionRolesContract = new MockSanctionRoles(arguments.initialOwner, arguments.initialSanctionAdmin,  arguments.initialMinter);
-
     }
 
     function test_setSanctionAdmin() public {

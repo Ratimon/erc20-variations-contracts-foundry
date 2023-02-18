@@ -12,6 +12,8 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
+import { UD60x18, ud } from "@prb-math/UD60x18.sol";
+
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, Ownable2Step {
     /**
      * @notice the ERC20 token sale for this bonding curve
@@ -32,6 +34,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @notice BondingCurve constructor
      * @param _acceptedToken ERC20 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
+     * @param _mintCap maximum token sold for this bonding curve to ensure security
     **/
     constructor(
         IERC1363 _acceptedToken,
@@ -67,7 +70,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @param amount the amount quantity of underlying token  to allocate
      * @param to address destination
     **/
-    function allocate(uint256 amount, address to) external onlyOwner {
+    function allocate(uint256 amount, address to) external virtual override onlyOwner {
         SafeERC20.safeTransfer(acceptedToken(), to, amount);
         emit Allocate(msg.sender, amount);
     }
@@ -116,9 +119,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @return amountOut price reported 
      * @dev just use only one helper function from LinearCurve
     **/
-    function getCurrentPrice() external view returns (uint256){
-        return 1;
-    }
+    function getCurrentPrice() external view virtual returns (uint256);
 
     /**
      * @notice return amount of token received after a bonding curve purchase
@@ -128,9 +129,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     function getAmountOut(uint256 amountIn)
         public
         view
-        returns (uint256 amountOut) {
-            return 1;
-    }
+        virtual
+        returns(uint256);
 
     /**
      * @notice balance of accepted token the bonding curve

@@ -26,7 +26,7 @@ contract TestUnitLinearCurve is StdUtils, PRBMathAssertions {
     function test_getInstantaneousPrice() external {
         UD60x18 tokenAmountIn = ud(20e18);
 
-        UD60x18 actualPrice = linearCurveContract.getInstantaneousPrice(tokenAmountIn);
+        UD60x18 actualPrice = linearCurveContract.getLinearInstantaneousPrice(tokenAmountIn);
         UD60x18 expectedPrice = ud(60e18);
         // 1.5*20 + 30 = 60
         assertEq(actualPrice, expectedPrice);
@@ -36,7 +36,7 @@ contract TestUnitLinearCurve is StdUtils, PRBMathAssertions {
         tokenSupply = bound( tokenSupply, 0.5e18, 200e18);
         UD60x18 tokenAmountIn = ud(tokenSupply);
 
-        UD60x18 actualPrice = linearCurveContract.getInstantaneousPrice(tokenAmountIn);
+        UD60x18 actualPrice = linearCurveContract.getLinearInstantaneousPrice(tokenAmountIn);
         UD60x18 expectedPrice = ud(SLOPE).mul(tokenAmountIn).add(ud(INTITIAL_PRICE));
 
         assertEq(actualPrice, expectedPrice);

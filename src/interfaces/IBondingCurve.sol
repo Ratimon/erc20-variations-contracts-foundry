@@ -24,7 +24,7 @@ interface IBondingCurve {
 
     // ----------- Governor only state changing api -----------
 
-    function allocate() external;
+    function allocate(uint256 amount, address to) external;
 
     function pause() external;
 
