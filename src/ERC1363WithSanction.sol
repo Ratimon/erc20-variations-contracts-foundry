@@ -52,6 +52,11 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
         _;
     }
 
+    /**
+     * @notice mint new ERC1363 from the contract
+     * @param to account to the ERC1363 to send
+     * @param amount amount quantity of ERC1363 to send
+     */
     function mint(address to, uint256 amount) external onlyMinter {
         _mint(to, amount);
     }

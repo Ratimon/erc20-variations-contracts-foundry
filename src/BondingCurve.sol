@@ -22,13 +22,13 @@ contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, Ownable2St
 
     /**
      * @notice BondingCurve constructor
-     * @param acceptedToken ERC20 token in for this bonding curve
+     * @param _acceptedToken ERC20 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
     **/
     constructor(
-        IERC1363 acceptedToken,
+        IERC1363 _acceptedToken,
         IERC20 _token
-        ) ERC1363PayableBase(acceptedToken){
+        ) ERC1363PayableBase(_acceptedToken){
 
         token = _token;
     }

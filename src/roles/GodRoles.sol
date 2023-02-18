@@ -5,26 +5,35 @@ import {IGodRoles} from "@main/interfaces/IGodRoles.sol";
 import {Errors} from "@main/shared/Error.sol";
 
 /**
- * @notice Customised Ownable Contract, preventing setting wrong admin address
+ * @notice Customised 2-step Ownable Contract, preventing setting wrong admin address
  * @dev more details is at https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable2Step
- */
+**/
 contract GodRoles is IGodRoles {
 
-    ///@notice the address of the current owner, that is able to set new god's address
+    /**
+     * @notice the address of the current owner, that is able to set new god's address
+    **/
     address internal _owner;
-    ///@notice the pending address of the owner, that is able to set new god's address
+
+    /**
+     * @notice the pending address of the owner, that is able to set new god's address
+    **/
     address internal _pendingOwner;
 
-    ///@notice the address which is  is able to transfer tokens between addresses at will
+    /**
+     * @notice the address which is  is able to transfer tokens between addresses at will
+    **/
     address internal _god;
-    ///@notice the pending address which is  is able to transfer tokens between addresses at will
+    /**
+     * @notice the pending address which is  is able to transfer tokens between addresses at will
+    **/
     address internal _pendingGod;
 
     /**
      * @notice GodRoles constructor
      * @param initialOwner initial owner
      * @param initialGod initial god
-     */
+    **/
     constructor(
         address initialOwner,
         address initialGod
@@ -41,7 +50,7 @@ contract GodRoles is IGodRoles {
     /**
      * @notice Starts the ownership transfer of the contract to a new account. Replaces the pending transfer if there is one.
      * Can only be called by the current owner.
-     */
+    **/
     function transferOwnership(address newOwner) external {
         if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
@@ -52,7 +61,7 @@ contract GodRoles is IGodRoles {
     /**
      * @notice The new owner accepts the ownership transfer.
      * Can only be called current owner.
-     */
+    **/
     function acceptOwnership() external {
         if (_pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
@@ -65,7 +74,7 @@ contract GodRoles is IGodRoles {
     /**
      * @notice set the new God
      * Can only be called by ether owner or the current god.
-     */
+    **/
     function setGod(address newGod) external {
         if ( (_god != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
@@ -76,7 +85,7 @@ contract GodRoles is IGodRoles {
     /**
      * @notice The new God accepts the God ownership transfer.
      * Can only be called current god.
-     */
+    **/
     function acceptGod() external {
         if (_pendingGod != msg.sender) revert Errors.NotAuthorized(msg.sender);
 

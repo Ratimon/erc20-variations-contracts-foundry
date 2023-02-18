@@ -11,22 +11,22 @@ import {GodRoles} from "@main/roles/GodRoles.sol";
 /**
  * @notice ERC1363 with god mode. It allows account with god role to transfer tokens between
 addresses at will.
- */
+**/
 contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
 
     /**
      * @notice erc1363 with god mode constructor
-     * @param name token name for ERC1363
-     * @param symbol token symbol for ERC1363
+     * @param _name token name for ERC1363
+     * @param _symbol token symbol for ERC1363
      * @param initialOwner account for initial owner 
      * @param initialGod account for initial owner god
      */
     constructor(
-        string memory name,
-        string memory symbol,
+        string memory _name,
+        string memory _symbol,
         address  initialOwner,
         address  initialGod
-        ) ERC20(name, symbol) GodRoles(initialOwner,initialGod){
+        ) ERC20(_name, _symbol) GodRoles(initialOwner,initialGod){
 
     }
 

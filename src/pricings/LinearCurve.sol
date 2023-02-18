@@ -4,7 +4,11 @@ pragma solidity  =0.8.17;
 import { powu } from "@prb-math/ud60x18/Math.sol";
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
-abstract contract LinearCurve {
+/**
+ * @notice abstract contract for calcuting curve
+ * @dev functioncal components could be used in derived contract
+**/
+contract LinearCurve {
 
     /**
      * @notice the curve slope
