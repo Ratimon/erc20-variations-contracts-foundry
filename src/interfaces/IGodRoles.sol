@@ -3,6 +3,14 @@ pragma solidity =0.8.17;
 
 interface IGodRoles {
 
+    // ----------- Events -----------
+
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    event GodSetStarted(address indexed previousGod, address indexed newGod);
+    event GodSet(address indexed previousGod, address indexed newGod);
+
     // ----------- Governor only state changing api -----------
 
     function transferOwnership(address newOwner) external;

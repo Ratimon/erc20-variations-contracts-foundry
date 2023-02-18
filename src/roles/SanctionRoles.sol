@@ -10,16 +10,6 @@ import {Errors} from "@main/shared/Error.sol";
  */
 contract SanctionRoles is ISanctionRoles{
 
-    // ----------- Events -----------
-
-    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
-    event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
-
-    event MinterSetStarted(address indexed previousMinter, address indexed newMinter);
-    event MinterSet(address indexed previousMinter, address indexed newMinter);
 
     /**
      * @notice the address of the current owner, that is able to set new Sanction admin and minter
@@ -118,7 +108,7 @@ contract SanctionRoles is ISanctionRoles{
         if ( (_minter != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
         _minter = newMinter;
-        emit SanctionAdminSetStarted(_minter, newMinter);
+        emit MinterSetStarted(_minter, newMinter);
     }
 
     /**
@@ -131,7 +121,7 @@ contract SanctionRoles is ISanctionRoles{
         delete _pendingMinter;
         address oldMinter = _minter;
         _minter = msg.sender;
-        emit SanctionAdminSet(oldMinter, _minter);
+        emit MinterSet(oldMinter, _minter);
     }
 
     /**

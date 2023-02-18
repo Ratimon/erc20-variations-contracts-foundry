@@ -10,14 +10,6 @@ import {Errors} from "@main/shared/Error.sol";
  */
 contract GodRoles is IGodRoles {
 
-    // ----------- Events -----------
-
-    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    event GodSetStarted(address indexed previousGod, address indexed newGod);
-    event GodSet(address indexed previousGod, address indexed newGod);
-
     ///@notice the address of the current owner, that is able to set new god's address
     address internal _owner;
     ///@notice the pending address of the owner, that is able to set new god's address

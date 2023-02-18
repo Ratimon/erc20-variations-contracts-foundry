@@ -3,6 +3,17 @@ pragma solidity =0.8.17;
 
 interface ISanctionRoles {
 
+    // ----------- Events -----------
+
+    event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
+    event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
+
+    event MinterSetStarted(address indexed previousMinter, address indexed newMinter);
+    event MinterSet(address indexed previousMinter, address indexed newMinter);
+
     // ----------- Governor only state changing api -----------
 
     function transferOwnership(address newOwner) external;
