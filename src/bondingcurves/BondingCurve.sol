@@ -17,6 +17,8 @@ import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
+
+    using SafeERC20 for IERC20;
     /**
      * @notice the ERC20 token sale for this bonding curve
     **/
@@ -55,7 +57,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
     function init() external override initializer {
         //deployer must approve token first
-        IERC20(token).transferFrom(msg.sender, address(this), unwrap(cap) );
+        IERC20(token).safeTransferFrom(msg.sender, address(this), unwrap(cap) );
         require( cap.eq(ud(IERC20(token).balanceOf(address(this)))) , "BondingCurve: must send Token to the contract first");
     }
 
@@ -176,7 +178,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param data bytes Additional data with no specified format
     **/
     function _approvalReceived(address sender, uint256 amount, bytes memory data) internal override {
-        IERC20(acceptedToken()).transferFrom(sender, address(this), amount);
+        IERC20(acceptedToken()).safeTransferFrom(sender, address(this), amount);
         _purchase(sender, sender, amount);
     }
 
@@ -188,7 +190,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
         require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds cap");
         _incrementTotalPurchased(amountOut);
-        IERC20(token).transfer(to,unwrap(amountOut));
+        IERC20(token).safeTransfer(to,unwrap(amountOut));
 
         emit Purchase(operator,to, ud(amountIn), amountOut);
         return amountOut;
