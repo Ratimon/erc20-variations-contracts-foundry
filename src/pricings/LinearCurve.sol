@@ -39,7 +39,7 @@ contract LinearCurve {
      * @notice return instantaneous bonding curve price
      * @return the instantaneous price = slope * currentTokenPurchased + initialPrice
     **/
-    function getLinearInstantaneousPrice(UD60x18 tokenSupply) internal view returns (UD60x18){
+    function getLinearInstantaneousPrice(UD60x18 tokenSupply) public view returns (UD60x18){
         return slope.mul(tokenSupply).add(initialPrice);
     }
 
@@ -49,7 +49,7 @@ contract LinearCurve {
      * @return the total token price reported 
      * @dev integral of price regarding to tokensupply : integral =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
     **/
-    function getPoolBalance(UD60x18 tokenSupply) internal view returns (UD60x18){
+    function getPoolBalance(UD60x18 tokenSupply) public view returns (UD60x18){
         return slope.mul(powu(tokenSupply,2)).div(ud(2e18)).add(tokenSupply.mul(initialPrice)) ;
     }
 

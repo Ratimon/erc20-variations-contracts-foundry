@@ -12,7 +12,8 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-import { UD60x18, ud } from "@prb-math/UD60x18.sol";
+import { UD60x18,toUD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
+import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, Ownable2Step {
     /**
@@ -23,12 +24,12 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     /**
      * @notice the total amount of token purchased on bonding curve
     **/
-    uint256 public override totalPurchased;
+    UD60x18 public override totalPurchased;
 
     /**
      * @notice the cap on how much sale token can be minted by the bonding curve
     **/
-    uint256 public override mintCap;
+    UD60x18 public override mintCap;
 
     /**
      * @notice BondingCurve constructor
@@ -42,7 +43,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
         uint256 _mintCap
         ) ERC1363PayableBase(_acceptedToken){
         token = _token;
-        _setMintCap(_mintCap);
+        _setMintCap(ud(_mintCap));
     }
 
 
@@ -56,7 +57,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
         virtual
         override
         whenNotPaused
-        returns (uint256 amountOut)
+        returns (UD60x18 amountOut)
     {
         require(msg.value == 0, "BondingCurve: unexpected ETH input");
         acceptedToken().transferFromAndCall(msg.sender, to, amountIn);
@@ -72,7 +73,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     **/
     function allocate(uint256 amount, address to) external virtual override onlyOwner {
         SafeERC20.safeTransfer(acceptedToken(), to, amount);
-        emit Allocate(msg.sender, amount);
+        emit Allocate(msg.sender, ud(amount));
     }
 
     /**
@@ -93,8 +94,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @notice resets the totalPurchased
     **/
     function reset() external override onlyOwner {
-        uint256 oldTotalPurchased = totalPurchased;
-        totalPurchased = 0;
+        UD60x18 oldTotalPurchased = totalPurchased;
+        totalPurchased = ud(0e18);
         emit Reset(oldTotalPurchased);
     }
 
@@ -102,7 +103,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @notice sets the mint cap for the bonding curve
      * @param _mintCap the cap
     **/
-    function setMintCap(uint256 _mintCap) external override onlyOwner {
+    function setMintCap(UD60x18 _mintCap) external override onlyOwner {
         _setMintCap(_mintCap);
     }
 
@@ -110,8 +111,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     /**
      * @notice returns how close to the minting cap we are
     **/
-    function availableToMint() public view override returns (uint256) {
-        return mintCap - totalPurchased;
+    function availableToMint() public view override returns (UD60x18) {
+        return mintCap.sub(totalPurchased);
     }
 
     /**
@@ -119,25 +120,25 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @return amountOut price reported 
      * @dev just use only one helper function from LinearCurve
     **/
-    function getCurrentPrice() external view virtual returns (uint256);
+    function getCurrentPrice() external view virtual returns (UD60x18);
 
     /**
      * @notice return amount of token received after a bonding curve purchase
      * @param amountIn the amount of underlying used to purchase
      * @return amountOut the amount of token received
     **/
-    function getAmountOut(uint256 amountIn)
+    function calculatePurchasingAmountOut(UD60x18 amountIn)
         public
         view
         virtual
-        returns(uint256);
+        returns(UD60x18);
 
     /**
      * @notice balance of accepted token the bonding curve
      * @return the amount of accepted token held in contract and ready to be allocated
     **/
-    function reserveBalance() public view virtual override returns (uint256) {
-        return acceptedToken().balanceOf(address(this));
+    function reserveBalance() public view virtual override returns (UD60x18) {
+        return ud(acceptedToken().balanceOf(address(this)));
     }
 
     /**
@@ -156,7 +157,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @dev This method is called after `onApprovalReceived`.
      *  Note: remember that the token contract address is always the message sender.
      * @param sender address The address which called `approveAndCall` function
-     * @param amount uint256 The amount of tokens to be spent
+     * @param amount The amount of tokens to be spent
      * @param data bytes Additional data with no specified format
      */
     function _approvalReceived(address sender, uint256 amount, bytes memory data) internal override {
@@ -166,26 +167,26 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
 
     function _purchase(address operator,  address to, uint256 amountIn)
         internal
-        returns (uint256 amountOut)
+        returns (UD60x18 amountOut)
     {
-        amountOut = getAmountOut(amountIn);
-        require(availableToMint() >= amountOut, "BondingCurve: exceeds mint cap");
+        amountOut = calculatePurchasingAmountOut(toUD60x18(amountIn));
+        require( gte( availableToMint(), amountOut) , "BondingCurve: exceeds mint cap");
 
         _incrementTotalPurchased(amountOut);
-        IERC20Mintable(address(token)).mint(to, amountOut);
+        IERC20Mintable(address(token)).mint(to, unwrap(amountOut));
 
-        emit Purchase(operator,to, amountIn, amountOut);
+        emit Purchase(operator,to, ud(amountIn), amountOut);
         return amountOut;
     }
 
-    function _incrementTotalPurchased(uint256 amount) internal {
-        totalPurchased = totalPurchased + amount;
+    function _incrementTotalPurchased(UD60x18 amount) internal {
+        totalPurchased = totalPurchased.add(amount);
     }
 
-    function _setMintCap(uint256 newMintCap) internal {
-        require(newMintCap != 0, "BondingCurve: zero mint cap");
+    function _setMintCap(UD60x18 newMintCap) internal {
+        if (isZero(ud(0))) revert Errors.ZeroNumberNotAllowed();
 
-        uint256 oldMintCap = mintCap;
+        UD60x18 oldMintCap = mintCap;
         mintCap = newMintCap;
 
         emit MintCapUpdate(oldMintCap, newMintCap);

@@ -2,17 +2,18 @@
 pragma solidity =0.8.17;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
 interface IBondingCurve {
     // ----------- Events -----------
 
-    event MintCapUpdate(uint256 oldMint, uint256 newMint);
+    event MintCapUpdate(UD60x18 oldMint, UD60x18 newMint);
 
-    event Purchase(address indexed operator, address indexed to, uint256 amountIn, uint256 amountOut);
+    event Purchase(address indexed operator, address indexed to, UD60x18 amountIn, UD60x18 amountOut);
 
-    event Allocate( address indexed caller, uint256 amount);
+    event Allocate( address indexed caller, UD60x18 amount);
 
-    event Reset(uint256 oldTotalPurchased);
+    event Reset(UD60x18 oldTotalPurchased);
 
 
     // ----------- State changing Api -----------
@@ -20,7 +21,7 @@ interface IBondingCurve {
     function purchase(address to, uint256 amountIn)
         external
         payable
-        returns (uint256 amountOut);
+        returns (UD60x18 amountOut);
 
     // ----------- Governor only state changing api -----------
 
@@ -32,24 +33,24 @@ interface IBondingCurve {
 
     function reset() external;
 
-    function setMintCap(uint256 newMintCap) external;
+    function setMintCap(UD60x18 newMintCap) external;
 
     // ----------- Getters -----------
 
-    function getCurrentPrice() external view returns (uint256);
+    function getCurrentPrice() external view returns (UD60x18);
 
-    function getAmountOut(uint256 amountIn)
+    function calculatePurchasingAmountOut(UD60x18 amountIn)
         external
         view
-        returns (uint256 amountOut);
+        returns (UD60x18 amountOut);
 
-    function totalPurchased() external view returns (uint256);
+    function totalPurchased() external view returns (UD60x18);
 
-    function mintCap() external view returns (uint256);
+    function mintCap() external view returns (UD60x18);
 
-    function availableToMint() external view returns (uint256);
+    function availableToMint() external view returns (UD60x18);
 
-    function reserveBalance() external view returns (uint256);
+    function reserveBalance() external view returns (UD60x18);
 
     function token() external view returns (IERC20);
 

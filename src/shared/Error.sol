@@ -3,6 +3,8 @@ pragma solidity =0.8.17;
 
 library Errors {
 
+    error ZeroNumberNotAllowed();
+
     error ZeroAddressNotAllowed();
 
     error NotAuthorized(address caller);

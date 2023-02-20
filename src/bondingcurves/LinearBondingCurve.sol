@@ -8,9 +8,9 @@ import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
+import { UD60x18,ud} from "@prb-math/UD60x18.sol";
 
 contract LinearBondingCurve is BondingCurve, LinearCurve {
-
     /**
      * @notice linear bondingCurve constructor
      * @param _acceptedToken ERC20 token in for this bonding curve
@@ -34,7 +34,7 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
      * @return amountOut price reported 
      * @dev just use only one helper function from LinearCurve
     **/
-    function getCurrentPrice() external view override returns (uint256){
+    function getCurrentPrice() external view override returns (UD60x18){
         return getLinearInstantaneousPrice(totalPurchased);
     }
 
@@ -42,17 +42,14 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
      * @notice return amount of token received after a bonding curve purchase
      * @param amountIn the amount of underlying used to purchase
      * @return amountOut the amount of token received
+     * @dev retained poolBalance (i.e. after including the next set of tokensupply) minus current poolBalance
     **/
-    function getAmountOut(uint256 amountIn)
+    function calculatePurchasingAmountOut(UD60x18 amountIn)
         public
         view
         override
-        returns(uint256) {
-        
+        returns(UD60x18 amountOut) {
+            return getPoolBalance(totalPurchased.add(amountIn)).sub(getPoolBalance(totalPurchased));
     }
-
-
-
-
 }
 
