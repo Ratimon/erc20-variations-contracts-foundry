@@ -13,8 +13,11 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-import { UD60x18,toUD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
+import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
+
+
+import "@forge-std/console2.sol";
 
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
     /**
@@ -54,7 +57,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
     **/
 
     function init() external override initializer {
-        //deployer approve token first
+        //deployer must approve token first
         IERC20(token).transferFrom(msg.sender, address(this), unwrap(cap) );
         require( cap.eq(ud(IERC20(token).balanceOf(address(this)))) , "BondingCurve: must send Token to the contract first");
     }
@@ -73,9 +76,15 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         returns (UD60x18 amountOut)
     {
         require(msg.value == 0, "BondingCurve: unexpected ETH input");
-        acceptedToken().transferFromAndCall(msg.sender, to, amountIn);
 
-        amountOut = _purchase(msg.sender, to, amountIn);
+        amountOut = calculatePurchasingAmountOut(ud(amountIn));
+
+        acceptedToken().transferFromAndCall(to, address(this), amountIn);
+        // acceptedToken().transferAndCall(to, amountIn);
+
+        // transferAndCall
+
+        // amountOut = _purchase(msg.sender, to, amountIn);
         return amountOut;
     }
 
@@ -182,12 +191,21 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         internal
         returns (UD60x18 amountOut)
     {
-        amountOut = calculatePurchasingAmountOut(toUD60x18(amountIn));
-        require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds mint cap");
+        // console2.log( 'amountIn', amountIn);
+        // console2.log( 'toUD60x18(amountIn)', unwrap(toUD60x18(amountIn)));
+        // console2.log( 'ud(amountIn)', unwrap(ud(amountIn)));
 
+
+        amountOut = calculatePurchasingAmountOut(ud(amountIn));
+
+        // console2.log( 'availableToSell()', unwrap(availableToSell()));
+        // console2.log( 'amountOut', unwrap(amountOut));
+
+
+        require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds cap");
         _incrementTotalPurchased(amountOut);
         // IERC20Mintable(address(token)).mint(to, unwrap(amountOut));
-         IERC20(token).transfer(to,unwrap(amountOut));
+        IERC20(token).transfer(to,unwrap(amountOut));
 
         emit Purchase(operator,to, ud(amountIn), amountOut);
         return amountOut;

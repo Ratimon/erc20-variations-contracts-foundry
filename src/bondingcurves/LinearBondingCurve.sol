@@ -8,7 +8,10 @@ import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
-import { UD60x18,ud} from "@prb-math/UD60x18.sol";
+import { UD60x18,ud, unwrap} from "@prb-math/UD60x18.sol";
+
+import "@forge-std/console2.sol";
+
 
 contract LinearBondingCurve is BondingCurve, LinearCurve {
     /**
@@ -49,6 +52,13 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
         view
         override
         returns(UD60x18 amountOut) {
+
+            // uint256 poolBalance1 = unwrap(getPoolBalance(totalPurchased.add(amountIn)));
+
+            // console2.log( 'totalPurchased + amountIn', unwrap(amountIn));
+
+            // console2.log( 'poolBalance1', poolBalance1);
+
             return getPoolBalance(totalPurchased.add(amountIn)).sub(getPoolBalance(totalPurchased));
     }
 }

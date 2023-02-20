@@ -30,7 +30,7 @@ void-deploy-god:
 
 
 unit-test-BondingCurve:
-	forge test --match-path test/unit/BondingCurve.t.sol -vvvv
+	forge test --match-path test/unit/BondingCurve.t.sol -vvv
 
 unit-test-ERC1363WithSanctionRoles:
 	forge test --match-path test/unit/ERC1363WithSanction.Roles.t.sol -vvv

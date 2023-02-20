@@ -8,6 +8,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
+import {LinearCurve} from "@main/pricings/LinearCurve.sol";
+
 
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 
@@ -15,9 +17,11 @@ import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {LinearBondingCurve} from "@main/bondingcurves/LinearBondingCurve.sol";
 
-import { unwrap } from "@prb-math/UD60x18.sol";
+import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
 
 contract TestUnitLinearBondingCurve is Test, RegisterScripts {
+
+    uint256 constant maxUint256 = type(uint256).max;
 
     address deployer;
     address alice = address(1);
@@ -91,14 +95,11 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
 
         vm.startPrank(deployer);
 
-        // arg_linearBondingCurve.acceptedToken = address(erc1363WithSanction);
-        // arg_linearBondingCurve.token = address(saleToken);
         arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
         arg_linearBondingCurve.token = IERC20(address(saleToken));
-        arg_linearBondingCurve._cap = 1_000_000;
+        arg_linearBondingCurve._cap = 1_000_000e18;
         arg_linearBondingCurve._slope = 1.5e18;
         arg_linearBondingCurve._initialPrice = 30e18;
-
         
         linearBondingCurve = new LinearBondingCurve(
             arg_linearBondingCurve.acceptedToken,
@@ -110,10 +111,8 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
 
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
-       
-
-        uint256 maxTokens = type(uint256).max;
-        IERC20(saleToken).approve(address(linearBondingCurve),maxTokens);
+        // uint256 maxTokens = type(uint256).max;
+        IERC20(saleToken).approve(address(linearBondingCurve),maxUint256);
 
         deal({token : address(saleToken), to: deployer, give: arg_linearBondingCurve._cap });
 
@@ -132,5 +131,72 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
     function test_Constructor() public {
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
     }
+
+    function test_purchase_SaleToken() public {
+
+        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+
+        vm.startPrank(alice);
+
+        uint256 alicePreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
+        UD60x18 preReserveBalance = linearBondingCurve.reserveBalance();
+
+        IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
+        uint256 buying_amount = 7e18;
+
+        linearBondingCurve.purchase( alice, buying_amount);
+
+        uint256 alicePostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
+        UD60x18 postReserveBalance = linearBondingCurve.reserveBalance();
+        uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken ? (alicePostBalBuyingToken - alicePreBalBuyingToken) : (alicePreBalBuyingToken - alicePostBalBuyingToken);
+
+        assertEq(alicePostBalBuyingToken, 13e18 );
+        assertEq(changeInAliceBalBuyingToken, buying_amount );
+        assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), buying_amount );
+
+        vm.stopPrank();
+
+    }
+
+    function test_purchase_BuyingToken() public {
+
+        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+
+        vm.startPrank(alice);
+
+        uint256 alicePreBalSaleToken = IERC20(address(saleToken)).balanceOf(alice);
+        UD60x18 preTotalPurchased = linearBondingCurve.totalPurchased();
+        UD60x18 preAvailableToSell = linearBondingCurve.availableToSell();
+
+        IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
+        uint256 buying_amount = 7e18;
+        UD60x18 amountOut = linearBondingCurve.purchase( alice, buying_amount);
+        // 1.5/2*(7^2) + 30*(7) = 246.75
+
+        uint256 alicePostBalSaleToken = IERC20(address(saleToken)).balanceOf(alice);
+        UD60x18 postTotalPurchased = linearBondingCurve.totalPurchased();
+        UD60x18 postAvailableToSell = linearBondingCurve.availableToSell();
+
+        LinearCurve linearCurve =  LinearCurve(address(linearBondingCurve));
+        UD60x18  postSaleTokenSupply = preTotalPurchased.add(ud(buying_amount));
+        UD60x18 firstIntegral = linearCurve.getPoolBalance(postSaleTokenSupply);
+        UD60x18 secondIntegral = linearCurve.getPoolBalance(preTotalPurchased);
+        UD60x18 changeInSaleToken = firstIntegral.sub(secondIntegral);
+
+        assertEq(alicePostBalSaleToken, 246.75e18 );
+        assertEq(alicePostBalSaleToken - alicePreBalSaleToken, unwrap(changeInSaleToken) );
+
+        assertEq(unwrap(postTotalPurchased), 246.75e18 );
+        assertEq(unwrap(postTotalPurchased), unwrap(amountOut) );
+        assertEq(unwrap(postTotalPurchased.sub(preTotalPurchased)),unwrap(changeInSaleToken) );
+        assertEq(unwrap(postAvailableToSell), unwrap(preAvailableToSell.sub(changeInSaleToken)));
+
+
+        vm.stopPrank();
+
+    }
+
+
+
 
 }

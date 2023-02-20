@@ -88,9 +88,10 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
-        vm.startPrank(bob);
 
         deal({token : address(erc1363WithSanction), to: bob, give: 10 ether });
+        vm.startPrank(bob);
+
         uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, 10 ether);
         
@@ -113,9 +114,9 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
-        vm.startPrank(bob);
 
         deal({token : address(erc1363WithSanction), to: bob, give: amount_to_send });
+        vm.startPrank(bob);
 
         uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, amount_to_send);

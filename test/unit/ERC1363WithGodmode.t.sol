@@ -82,9 +82,11 @@ contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
 
     function testFuzz_transferWithGodmode(uint256 amount_to_transfer) public {
         amount_to_transfer = bound( amount_to_transfer, 0.5 ether, 200 ether);
-        vm.startPrank(deployer);
 
         deal({token : address(erc1363WithGodmode), to: alice, give: amount_to_transfer });
+
+        vm.startPrank(deployer);
+
         uint256 alicePreBal = IERC20(address(erc1363WithGodmode)).balanceOf(alice);
         uint256 bobPreBal = IERC20(address(erc1363WithGodmode)).balanceOf(bob);
         vm.expectEmit(true, true, false, true, address(erc1363WithGodmode));
