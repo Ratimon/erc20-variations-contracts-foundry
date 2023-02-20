@@ -49,6 +49,8 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         deal(alice, 1 ether);
         deal(bob, 1 ether);
 
+        vm.startPrank(deployer);
+
         arguments.name = "Test Sanction Token";
         arguments.symbol = "SANC";
         arguments.initialOwner = msg.sender;
@@ -56,6 +58,9 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
         arguments.initialMinter = msg.sender;
 
         erc1363WithSanction = new ERC1363WithSanction(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin, arguments.initialMinter);
+        vm.label(address(erc1363WithSanction), "erc1363WithSanction");
+
+        vm.stopPrank();
     }
 
     function test_Constructor() public {

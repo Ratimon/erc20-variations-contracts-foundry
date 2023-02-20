@@ -7,7 +7,7 @@ import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 interface IBondingCurve {
     // ----------- Events -----------
 
-    event MintCapUpdate(UD60x18 oldMint, UD60x18 newMint);
+    event CapUpdate(UD60x18 oldAmount, UD60x18 newAmount);
 
     event Purchase(address indexed operator, address indexed to, UD60x18 amountIn, UD60x18 amountOut);
 
@@ -25,6 +25,8 @@ interface IBondingCurve {
 
     // ----------- Governor only state changing api -----------
 
+    function init() external;
+
     function allocate(uint256 amount, address to) external;
 
     function pause() external;
@@ -33,7 +35,7 @@ interface IBondingCurve {
 
     function reset() external;
 
-    function setMintCap(UD60x18 newMintCap) external;
+    function setCap(UD60x18 newCap) external;
 
     // ----------- Getters -----------
 
@@ -46,9 +48,9 @@ interface IBondingCurve {
 
     function totalPurchased() external view returns (UD60x18);
 
-    function mintCap() external view returns (UD60x18);
+    function cap() external view returns (UD60x18);
 
-    function availableToMint() external view returns (UD60x18);
+    function availableToSell() external view returns (UD60x18);
 
     function reserveBalance() external view returns (UD60x18);
 

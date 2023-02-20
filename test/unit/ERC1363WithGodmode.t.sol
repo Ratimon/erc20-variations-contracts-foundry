@@ -48,12 +48,18 @@ contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
         deal(alice, 1 ether);
         deal(bob, 1 ether);
 
+        vm.startPrank(deployer);
+
+
         arguments.name = "Test Sanction Token";
         arguments.symbol = "SANC";
         arguments.initialOwner = msg.sender;
         arguments.initialSanctionAdmin = msg.sender;
 
         erc1363WithGodmode = new ERC1363WithGodmode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
+        vm.label(address(erc1363WithGodmode), "erc1363WithGodmode");
+
+        vm.stopPrank();
     }
 
     function test_Constructor() public {

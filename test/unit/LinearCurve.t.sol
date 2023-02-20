@@ -12,15 +12,26 @@ import {MockLinearCurve} from "@main/mocks/MockLinearCurve.sol";
 
 contract TestUnitLinearCurve is StdUtils, PRBMathAssertions {
 
+    address public deployer;
+
     uint256 immutable SLOPE = 1.5e18;
     uint256 immutable INTITIAL_PRICE = 30e18;
 
     MockLinearCurve linearCurveContract;
 
     function setUp() public {
-         vm.label(address(this), "TestUnitLinearCurve");
+        vm.label(address(this), "TestUnitLinearCurve");
+
+        deployer = msg.sender;
+        vm.label(deployer, "Deployer");
+
+        vm.startPrank(deployer);
 
         linearCurveContract = new MockLinearCurve(SLOPE, INTITIAL_PRICE);
+        vm.label(address(linearCurveContract), "linearCurveContract");
+
+        vm.stopPrank();
+
     }
 
     function test_getInstantaneousPrice() external {

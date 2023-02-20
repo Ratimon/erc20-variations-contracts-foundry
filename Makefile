@@ -29,7 +29,8 @@ void-deploy-god:
 # 	US_CONFIRM=true forge script ONE_deployERC1363WithSanction --rpc-url $(call network,mainnet)  -vvv --broadcast --ffi -t --sender $(call sender_address)
 
 
-
+unit-test-BondingCurve:
+	forge test --match-path test/unit/BondingCurve.t.sol -vvvv
 
 unit-test-ERC1363WithSanctionRoles:
 	forge test --match-path test/unit/ERC1363WithSanction.Roles.t.sol -vvv

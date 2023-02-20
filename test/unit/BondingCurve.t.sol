@@ -9,9 +9,13 @@ import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 
+import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
+
 import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {LinearBondingCurve} from "@main/bondingcurves/LinearBondingCurve.sol";
+
+import { unwrap } from "@prb-math/UD60x18.sol";
 
 contract TestUnitLinearBondingCurve is Test, RegisterScripts {
 
@@ -36,12 +40,15 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
     struct Constructors_linearBondingCurve {
         IERC1363 acceptedToken;
         IERC20 token;
-        uint256 _mintCap;
+        uint256 _cap;
         uint256 _slope;
         uint256 _initialPrice;
     }
     Constructors_linearBondingCurve arg_linearBondingCurve;
     IBondingCurve linearBondingCurve;
+
+    MockERC20 mockToken;
+    IERC20 saleToken;
 
 
     function setUpScripts() internal virtual override {
@@ -49,9 +56,12 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
     }
 
     function setUp() public virtual {
+
         vm.label(address(this), "TestUnitLinearBondingCurve");
+
         deployer = msg.sender;
         vm.label(deployer, "Deployer");
+
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
@@ -72,20 +82,55 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
             arg_erc1363WithSanction.initialSanctionAdmin,
             arg_erc1363WithSanction.initialMinter
         );
+         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
-        // arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
-        // arg_linearBondingCurve.token = IERC20();
-        // arg_linearBondingCurve._mintCap = 1_000_000;
-        // arg_linearBondingCurve._slope = 1.5e18;
-        // arg_linearBondingCurve._initialPrice = 30e18;
 
-        // linearBondingCurve = new LinearBondingCurve(
-        //     arg_linearBondingCurve.acceptedToken,
-        //     arg_linearBondingCurve.token, 
-        //     arg_linearBondingCurve._mintCap,
-        //     arg_linearBondingCurve._slope,
-        //     arg_linearBondingCurve._initialPrice
-        // );
+        mockToken = new MockERC20("TestSaleToken", "TT0", 18);
+        saleToken = IERC20(address(mockToken));
+        vm.label(address(saleToken), "TestSaleToken");
+
+        vm.startPrank(deployer);
+
+        // arg_linearBondingCurve.acceptedToken = address(erc1363WithSanction);
+        // arg_linearBondingCurve.token = address(saleToken);
+        arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
+        arg_linearBondingCurve.token = IERC20(address(saleToken));
+        arg_linearBondingCurve._cap = 1_000_000;
+        arg_linearBondingCurve._slope = 1.5e18;
+        arg_linearBondingCurve._initialPrice = 30e18;
+
+        
+        linearBondingCurve = new LinearBondingCurve(
+            arg_linearBondingCurve.acceptedToken,
+            arg_linearBondingCurve.token, 
+            arg_linearBondingCurve._cap,
+            arg_linearBondingCurve._slope,
+            arg_linearBondingCurve._initialPrice
+        );
+
+        vm.label(address(linearBondingCurve), "linearBondingCurve");
+
+       
+
+        uint256 maxTokens = type(uint256).max;
+        IERC20(saleToken).approve(address(linearBondingCurve),maxTokens);
+
+        deal({token : address(saleToken), to: deployer, give: arg_linearBondingCurve._cap });
+
+        linearBondingCurve.init();
+
+        vm.stopPrank();
+    }
+
+    // /// @dev Checks common assumptions for the tests below.
+    // function checkAssumptions(address owner, address to, uint256 amount0) internal pure {
+    //     vm.assume(owner != address(0) && to != address(0));
+    //     vm.assume(owner != to);
+    //     vm.assume(amount0 > 0);
+    // }
+
+    function test_Constructor() public {
+        assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
     }
 
 }

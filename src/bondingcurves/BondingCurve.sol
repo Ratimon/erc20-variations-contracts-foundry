@@ -8,6 +8,7 @@ import {IERC20Mintable} from "@main/interfaces/IERC20Mintable.sol";
 
 import {Errors} from "@main/shared/Error.sol";
 import {ERC1363PayableBase} from "@main/base/ERC1363PayableBase.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
@@ -15,7 +16,7 @@ import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { UD60x18,toUD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
-abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, Ownable2Step {
+abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
     /**
      * @notice the ERC20 token sale for this bonding curve
     **/
@@ -29,21 +30,33 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     /**
      * @notice the cap on how much sale token can be minted by the bonding curve
     **/
-    UD60x18 public override mintCap;
+    UD60x18 public override cap;
 
     /**
      * @notice BondingCurve constructor
      * @param _acceptedToken ERC20 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
-     * @param _mintCap maximum token sold for this bonding curve to ensure security
+     * @param _cap maximum token sold for this bonding curve to ensure security
     **/
     constructor(
         IERC1363 _acceptedToken,
         IERC20 _token,
-        uint256 _mintCap
+        uint256 _cap
         ) ERC1363PayableBase(_acceptedToken){
+
         token = _token;
-        _setMintCap(ud(_mintCap));
+        _setCap(ud(_cap));
+    }
+
+    /**
+     * @notice init function to  be called after deployment
+     * @dev must be atomic in one deployment scripy
+    **/
+
+    function init() external override initializer {
+        //deployer approve token first
+        IERC20(token).transferFrom(msg.sender, address(this), unwrap(cap) );
+        require( cap.eq(ud(IERC20(token).balanceOf(address(this)))) , "BondingCurve: must send Token to the contract first");
     }
 
 
@@ -100,19 +113,19 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
     }
 
     /**
-     * @notice sets the mint cap for the bonding curve
-     * @param _mintCap the cap
+     * @notice sets the cap for the bonding curve
+     * @param _cap the cap
     **/
-    function setMintCap(UD60x18 _mintCap) external override onlyOwner {
-        _setMintCap(_mintCap);
+    function setCap(UD60x18 _cap) external override onlyOwner {
+        _setCap(_cap);
     }
 
 
     /**
-     * @notice returns how close to the minting cap we are
+     * @notice returns how close to the cap we are
     **/
-    function availableToMint() public view override returns (UD60x18) {
-        return mintCap.sub(totalPurchased);
+    function availableToSell() public view override returns (UD60x18) {
+        return cap.sub(totalPurchased);
     }
 
     /**
@@ -148,7 +161,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @param sender Address performing the token purchase
      * @param amount The amount of tokens transferred
      * @param data Additional data with no specified format
-     */
+    **/
     function _transferReceived(address operator, address sender, uint256 amount, bytes memory data) internal override {
         _purchase(operator, sender, amount);
     }
@@ -159,7 +172,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
      * @param sender address The address which called `approveAndCall` function
      * @param amount The amount of tokens to be spent
      * @param data bytes Additional data with no specified format
-     */
+    **/
     function _approvalReceived(address sender, uint256 amount, bytes memory data) internal override {
         IERC20(acceptedToken()).transferFrom(sender, address(this), amount);
         _purchase(sender, sender, amount);
@@ -170,10 +183,11 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
         returns (UD60x18 amountOut)
     {
         amountOut = calculatePurchasingAmountOut(toUD60x18(amountIn));
-        require( gte( availableToMint(), amountOut) , "BondingCurve: exceeds mint cap");
+        require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds mint cap");
 
         _incrementTotalPurchased(amountOut);
-        IERC20Mintable(address(token)).mint(to, unwrap(amountOut));
+        // IERC20Mintable(address(token)).mint(to, unwrap(amountOut));
+         IERC20(token).transfer(to,unwrap(amountOut));
 
         emit Purchase(operator,to, ud(amountIn), amountOut);
         return amountOut;
@@ -183,13 +197,22 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Pausable, O
         totalPurchased = totalPurchased.add(amount);
     }
 
-    function _setMintCap(UD60x18 newMintCap) internal {
-        if (isZero(ud(0))) revert Errors.ZeroNumberNotAllowed();
+    function _setCap(UD60x18 newCap) internal {
+        if (isZero(newCap)) revert Errors.ZeroNumberNotAllowed();
 
-        UD60x18 oldMintCap = mintCap;
-        mintCap = newMintCap;
+        UD60x18 oldCap = cap;
+        cap = newCap;
 
-        emit MintCapUpdate(oldMintCap, newMintCap);
+        emit CapUpdate(oldCap, newCap);
     }
+
+
+    // /**
+    // * @notice approves a token for this contract
+    // **/
+    // function _approveToken(address _token) internal {
+    //     uint256 maxTokens = type(uint256).max;
+    //     IERC20(_token).approve(address(this), maxTokens);
+    // }
 
 }

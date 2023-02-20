@@ -15,17 +15,17 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
      * @notice linear bondingCurve constructor
      * @param _acceptedToken ERC20 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
-     * @param _mintCap maximum token sold for this bonding curve to ensure security
+     * @param _cap maximum token sold for this bonding curve to ensure security
      * @param _slope slope for this bonding curve
      * @param _initialPrice initial price for this bonding curve
      */
     constructor(
         IERC1363 _acceptedToken,
         IERC20 _token,
-        uint256 _mintCap,
+        uint256 _cap,
         uint256 _slope,
         uint256 _initialPrice
-        ) BondingCurve(_acceptedToken,_token,_mintCap) LinearCurve(_slope, _initialPrice){
+        ) BondingCurve(_acceptedToken,_token,_cap) LinearCurve(_slope, _initialPrice){
 
     }
 

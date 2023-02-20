@@ -45,11 +45,16 @@ contract TestUnitERC1363WithSanctionRoles is Test, RegisterScripts {
         deal(alice, 1 ether);
         deal(bob, 1 ether);
 
+        vm.startPrank(deployer);
+
         arguments.initialOwner = msg.sender;
         arguments.initialSanctionAdmin = msg.sender;
         arguments.initialMinter = msg.sender;
 
         sanctionRolesContract = new MockSanctionRoles(arguments.initialOwner, arguments.initialSanctionAdmin,  arguments.initialMinter);
+        vm.label(address(sanctionRolesContract), "sanctionRolesContract");
+
+        vm.stopPrank();
     }
 
     function test_setSanctionAdmin() public {

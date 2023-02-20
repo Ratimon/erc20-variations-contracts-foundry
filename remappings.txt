@@ -5,3 +5,4 @@
 @openzeppelin/=lib/openzeppelin-contracts/
 @prb-math/=lib/prb-math/src/
 @prb-test/=lib/prb-test/src/
+@solmate/=lib/solmate/src/
