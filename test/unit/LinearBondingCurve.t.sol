@@ -165,6 +165,4 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
     }
 
 
-
-
 }

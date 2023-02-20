@@ -13,7 +13,7 @@ import { UD60x18,ud, unwrap} from "@prb-math/UD60x18.sol";
 contract LinearBondingCurve is BondingCurve, LinearCurve {
     /**
      * @notice linear bondingCurve constructor
-     * @param _acceptedToken ERC20 token in for this bonding curve
+     * @param _acceptedToken ERC1337 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
      * @param _cap maximum token sold for this bonding curve to ensure security
      * @param _slope slope for this bonding curve

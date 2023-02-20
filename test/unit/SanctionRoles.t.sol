@@ -37,7 +37,6 @@ contract TestUnitSanctionRoles is Test, RegisterScripts, ConstantsFixture {
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
-        
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);

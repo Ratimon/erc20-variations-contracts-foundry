@@ -15,7 +15,6 @@ interface IBondingCurve {
 
     event Reset(UD60x18 oldTotalPurchased);
 
-
     // ----------- State changing Api -----------
 
     function purchase(address to, uint256 amountIn)

@@ -43,7 +43,7 @@ contract LinearCurve {
         return slope.mul(tokenSupply).add(initialPrice);
     }
 
-        /**
+    /**
      * @notice return the pool balance or the amount of the reserve currency
      * @param tokenSupply the token supply
      * @return the total token price reported 
