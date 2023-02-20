@@ -16,9 +16,6 @@ import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
-
-import "@forge-std/console2.sol";
-
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
     /**
      * @notice the ERC20 token sale for this bonding curve
@@ -78,13 +75,9 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         require(msg.value == 0, "BondingCurve: unexpected ETH input");
 
         amountOut = calculatePurchasingAmountOut(ud(amountIn));
-
+        
         acceptedToken().transferFromAndCall(to, address(this), amountIn);
-        // acceptedToken().transferAndCall(to, amountIn);
 
-        // transferAndCall
-
-        // amountOut = _purchase(msg.sender, to, amountIn);
         return amountOut;
     }
 
@@ -191,20 +184,10 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         internal
         returns (UD60x18 amountOut)
     {
-        // console2.log( 'amountIn', amountIn);
-        // console2.log( 'toUD60x18(amountIn)', unwrap(toUD60x18(amountIn)));
-        // console2.log( 'ud(amountIn)', unwrap(ud(amountIn)));
-
-
         amountOut = calculatePurchasingAmountOut(ud(amountIn));
-
-        // console2.log( 'availableToSell()', unwrap(availableToSell()));
-        // console2.log( 'amountOut', unwrap(amountOut));
-
 
         require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds cap");
         _incrementTotalPurchased(amountOut);
-        // IERC20Mintable(address(token)).mint(to, unwrap(amountOut));
         IERC20(token).transfer(to,unwrap(amountOut));
 
         emit Purchase(operator,to, ud(amountIn), amountOut);

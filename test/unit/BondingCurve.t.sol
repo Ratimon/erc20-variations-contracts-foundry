@@ -10,7 +10,6 @@ import {IBondingCurve} from "@main/interfaces/IBondingCurve.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
-
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 
 import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
@@ -54,7 +53,6 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
     MockERC20 mockToken;
     IERC20 saleToken;
 
-
     function setUpScripts() internal virtual override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
@@ -88,7 +86,6 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
         );
          vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
-
         mockToken = new MockERC20("TestSaleToken", "TT0", 18);
         saleToken = IERC20(address(mockToken));
         vm.label(address(saleToken), "TestSaleToken");
@@ -111,11 +108,8 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
 
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
-        // uint256 maxTokens = type(uint256).max;
         IERC20(saleToken).approve(address(linearBondingCurve),maxUint256);
-
         deal({token : address(saleToken), to: deployer, give: arg_linearBondingCurve._cap });
-
         linearBondingCurve.init();
 
         vm.stopPrank();
