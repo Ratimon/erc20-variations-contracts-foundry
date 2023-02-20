@@ -12,24 +12,13 @@ import {Errors} from "@main/shared/Error.sol";
 import {GodRoles} from "@main/roles/GodRoles.sol";
 import {ERC1363WithGodmode} from "@main/ERC1363WithGodmode.sol";
 
+import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithGodmode}  from "@test/unit/utils/ERC1363WithGodmode.constructor.sol";
 
-contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
+
+contract TestUnitERC1363WithGodmode is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithGodmode {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
-
-    address deployer;
-    address alice = address(1);
-    address bob = address(2);
-    address carol = address(3);
-    address dave = address(4);
-
-    struct Constructors {
-        string name;
-        string symbol;
-        address initialOwner;
-        address initialSanctionAdmin;
-    }
-    Constructors arguments;
 
     IERC1363WithGodmode erc1363WithGodmode;
 
@@ -50,13 +39,17 @@ contract TestUnitERC1363WithGodmode is Test, RegisterScripts {
 
         vm.startPrank(deployer);
 
+        arg_erc1363WithGodmode.name = "Test Sanction Token";
+        arg_erc1363WithGodmode.symbol = "SANC";
+        arg_erc1363WithGodmode.initialOwner = msg.sender;
+        arg_erc1363WithGodmode.initialSanctionAdmin = msg.sender;
 
-        arguments.name = "Test Sanction Token";
-        arguments.symbol = "SANC";
-        arguments.initialOwner = msg.sender;
-        arguments.initialSanctionAdmin = msg.sender;
-
-        erc1363WithGodmode = new ERC1363WithGodmode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
+        erc1363WithGodmode = new ERC1363WithGodmode(
+            arg_erc1363WithGodmode.name,
+            arg_erc1363WithGodmode.symbol,
+            arg_erc1363WithGodmode.initialOwner,
+            arg_erc1363WithGodmode.initialSanctionAdmin
+        );
         vm.label(address(erc1363WithGodmode), "erc1363WithGodmode");
 
         vm.stopPrank();

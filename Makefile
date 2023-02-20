@@ -32,7 +32,16 @@ void-deploy-god:
 unit-test-BondingCurve:
 	forge test --match-path test/unit/BondingCurve.t.sol -vvv
 
-unit-test-ERC1363WithSanctionRoles:
+unit-test-ERC1363WithGodmode:
+	forge test --match-path test/unit/ERC1363WithGodmode.t.sol -vvv
+
+integration-test-ERC1363WithGodmode:
+	forge test --match-path test/integration/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv
+
+# --match-test to filter test functions, --match-contract to filter test contracts, and --match-path
+# --mt
+
+unit-test-SanctionRoles:
 	forge test --match-path test/unit/ERC1363WithSanction.Roles.t.sol -vvv
 
 unit-test-ERC1363WithSanction:
@@ -47,14 +56,6 @@ integration-test-ERC1363WithSanction:
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 
-unit-test-ERC1363WithGodmode:
-	forge test --match-path test/unit/ERC1363WithGodmode.t.sol -vvv
-
-integration-test-ERC1363WithGodmode:
-	forge test --match-path test/integration/ERC1363WithGodmode.t.sol --fork-url  $(call local_network,8545) -vvv
-
-# --match-test to filter test functions, --match-contract to filter test contracts, and --match-path
-# --mt
 
 check-api-key:
 ifndef ALCHEMY_API_KEY

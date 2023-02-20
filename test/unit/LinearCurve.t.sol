@@ -9,10 +9,9 @@ import { powu } from "@prb-math/ud60x18/Math.sol";
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";
 
 import {MockLinearCurve} from "@main/mocks/MockLinearCurve.sol";
+import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 
-contract TestUnitLinearCurve is StdUtils, PRBMathAssertions {
-
-    address public deployer;
+contract TestUnitLinearCurve is StdUtils, PRBMathAssertions, ConstantsFixture {
 
     uint256 immutable SLOPE = 1.5e18;
     uint256 immutable INTITIAL_PRICE = 30e18;

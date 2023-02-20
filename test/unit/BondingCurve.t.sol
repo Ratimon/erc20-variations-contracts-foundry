@@ -17,36 +17,15 @@ import {LinearBondingCurve} from "@main/bondingcurves/LinearBondingCurve.sol";
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
 
-contract TestUnitLinearBondingCurve is Test, RegisterScripts {
+import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
-    uint256 constant maxUint256 = type(uint256).max;
+import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
+import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
-    address deployer;
-    address alice = address(1);
-    address bob = address(2);
-    address carol = address(3);
-    address dave = address(4);
+contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
-
-    struct Constructors_erc1363WithSanction {
-        string name;
-        string symbol;
-        address initialOwner;
-        address initialSanctionAdmin;
-        address initialMinter;
-    }
-    Constructors_erc1363WithSanction arg_erc1363WithSanction;
     IERC1363WithSanction erc1363WithSanction;
-
-
-    struct Constructors_linearBondingCurve {
-        IERC1363 acceptedToken;
-        IERC20 token;
-        uint256 _cap;
-        uint256 _slope;
-        uint256 _initialPrice;
-    }
-    Constructors_linearBondingCurve arg_linearBondingCurve;
     IBondingCurve linearBondingCurve;
 
     MockERC20 mockToken;
@@ -57,7 +36,6 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
     }
 
     function setUp() public virtual {
-
         vm.label(address(this), "TestUnitLinearBondingCurve");
 
         deployer = msg.sender;
@@ -148,7 +126,6 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
         assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), buying_amount );
 
         vm.stopPrank();
-
     }
 
     function test_purchase_BuyingToken() public {
@@ -184,9 +161,7 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts {
         assertEq(unwrap(postTotalPurchased.sub(preTotalPurchased)),unwrap(changeInSaleToken) );
         assertEq(unwrap(postAvailableToSell), unwrap(preAvailableToSell.sub(changeInSaleToken)));
 
-
         vm.stopPrank();
-
     }
 
 

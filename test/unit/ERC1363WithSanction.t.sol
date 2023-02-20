@@ -12,25 +12,14 @@ import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 import {Errors} from "@main/shared/Error.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 
-contract TestUnitERC1363WithSanction is Test, RegisterScripts {
+import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
+
+contract TestUnitERC1363WithSanction is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction {
 
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
 
-    address public deployer;
-    address public alice = address(1);
-    address public bob = address(2);
-    address public carol = address(3);
-    address public dave = address(4);
-
-    struct Constructors {
-        string name;
-        string symbol;
-        address initialOwner;
-        address initialSanctionAdmin;
-        address initialMinter;
-    }
-    Constructors arguments;
     IERC1363WithSanction erc1363WithSanction;
 
     function setUpScripts() internal virtual override {
@@ -51,13 +40,19 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts {
 
         vm.startPrank(deployer);
 
-        arguments.name = "Test Sanction Token";
-        arguments.symbol = "SANC";
-        arguments.initialOwner = msg.sender;
-        arguments.initialSanctionAdmin = msg.sender;
-        arguments.initialMinter = msg.sender;
+        arg_erc1363WithSanction.name = "Test Sanction Token";
+        arg_erc1363WithSanction.symbol = "SANC";
+        arg_erc1363WithSanction.initialOwner = msg.sender;
+        arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
+        arg_erc1363WithSanction.initialMinter = msg.sender;
 
-        erc1363WithSanction = new ERC1363WithSanction(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin, arguments.initialMinter);
+        erc1363WithSanction = new ERC1363WithSanction(
+            arg_erc1363WithSanction.name,
+            arg_erc1363WithSanction.symbol,
+            arg_erc1363WithSanction.initialOwner,
+            arg_erc1363WithSanction.initialSanctionAdmin,
+            arg_erc1363WithSanction.initialMinter
+        );
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
         vm.stopPrank();

@@ -12,14 +12,14 @@ import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
     
 
-    struct Constructors {
+    struct Constructors_erc1363WithSanction {
         string name;
         string symbol;
         address initialOwner;
         address initialSanctionAdmin;
+        address initialMinter;
     }
-
-    Constructors arguments;
+    Constructors_erc1363WithSanction arg_erc1363WithSanction;
 
     IERC1363WithSanction erc1363WithSanction;
 
@@ -41,12 +41,19 @@ contract ERC1363WithSanctionSetupScript is Test, RegisterScripts, Constants  {
 
     function setUpHarness() private  {
 
-        arguments.name = "Test Sanction Token";
-        arguments.symbol = "SANC";
-        arguments.initialOwner = msg.sender;
-        arguments.initialSanctionAdmin = msg.sender;
+        arg_erc1363WithSanction.name = "Test Sanction Token";
+        arg_erc1363WithSanction.symbol = "SANC";
+        arg_erc1363WithSanction.initialOwner = msg.sender;
+        arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
+        arg_erc1363WithSanction.initialMinter = msg.sender;
 
-        bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialSanctionAdmin);
+        bytes memory constructors = abi.encode(
+            arg_erc1363WithSanction.name,
+            arg_erc1363WithSanction.symbol,
+            arg_erc1363WithSanction.initialOwner,
+            arg_erc1363WithSanction.initialSanctionAdmin,
+            arg_erc1363WithSanction.initialMinter
+        );
         address deployed = setUpContract("ERC1363WithSanction",constructors, "ERC1363WithSanction");
         erc1363WithSanction = IERC1363WithSanction(deployed);
 

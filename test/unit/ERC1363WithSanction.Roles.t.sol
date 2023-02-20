@@ -6,25 +6,22 @@ import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 
 import {Errors} from "@main/shared/Error.sol";
-import {MockSanctionRoles} from "@main/mocks/MockSanctionRoles.sol";
 
-contract TestUnitERC1363WithSanctionRoles is Test, RegisterScripts {
+import {MockSanctionRoles} from "@main/mocks/MockSanctionRoles.sol";
+import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
+
+
+contract TestUnitSanctionRoles is Test, RegisterScripts, ConstantsFixture {
 
     event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
     event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
 
-    address deployer;
-    address alice = address(1);
-    address bob = address(2);
-    address carol = address(3);
-    address dave = address(4);
-
-    struct Constructors {
+    struct Constructors_sanctionRoles {
         address initialOwner;
         address initialSanctionAdmin;
         address initialMinter;
     }
-    Constructors arguments;
+    Constructors_sanctionRoles arg_sanctionRoles;
 
     MockSanctionRoles sanctionRolesContract;
 
@@ -47,11 +44,11 @@ contract TestUnitERC1363WithSanctionRoles is Test, RegisterScripts {
 
         vm.startPrank(deployer);
 
-        arguments.initialOwner = msg.sender;
-        arguments.initialSanctionAdmin = msg.sender;
-        arguments.initialMinter = msg.sender;
+        arg_sanctionRoles.initialOwner = msg.sender;
+        arg_sanctionRoles.initialSanctionAdmin = msg.sender;
+        arg_sanctionRoles.initialMinter = msg.sender;
 
-        sanctionRolesContract = new MockSanctionRoles(arguments.initialOwner, arguments.initialSanctionAdmin,  arguments.initialMinter);
+        sanctionRolesContract = new MockSanctionRoles(arg_sanctionRoles.initialOwner, arg_sanctionRoles.initialSanctionAdmin,  arg_sanctionRoles.initialMinter);
         vm.label(address(sanctionRolesContract), "sanctionRolesContract");
 
         vm.stopPrank();

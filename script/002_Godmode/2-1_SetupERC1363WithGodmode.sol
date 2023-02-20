@@ -10,14 +10,14 @@ import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";
 
 contract ERC1363WithGodmodeSetupScript is Test, RegisterScripts, Constants  {
 
-    struct Constructors {
+    struct Constructors_erc1363WithGodmode {
         string name;
         string symbol;
         address initialOwner;
-        address initialGod;
+        address initialSanctionAdmin;
     }
+    Constructors_erc1363WithGodmode arg_erc1363WithGodmode;
 
-    Constructors arguments;
     IERC1363WithGodmode ERC1363WithGodmode;
 
     /**
@@ -37,12 +37,17 @@ contract ERC1363WithGodmodeSetupScript is Test, RegisterScripts, Constants  {
 
     function setUpHarness() private  {
 
-        arguments.name = "GOD Token";
-        arguments.symbol = "GOD";
-        arguments.initialOwner = msg.sender;
-        arguments.initialGod = msg.sender;
+        arg_erc1363WithGodmode.name = "Test Sanction Token";
+        arg_erc1363WithGodmode.symbol = "SANC";
+        arg_erc1363WithGodmode.initialOwner = msg.sender;
+        arg_erc1363WithGodmode.initialSanctionAdmin = msg.sender;
 
-        bytes memory constructors = abi.encode(arguments.name, arguments.symbol,  arguments.initialOwner, arguments.initialGod);
+        bytes memory constructors = abi.encode(
+            arg_erc1363WithGodmode.name,
+            arg_erc1363WithGodmode.symbol,
+            arg_erc1363WithGodmode.initialOwner,
+            arg_erc1363WithGodmode.initialSanctionAdmin
+        );
         address deployed = setUpContract("ERC1363WithGodmode",constructors, "ERC1363WithGodmode");
         ERC1363WithGodmode = IERC1363WithGodmode(deployed);
 
