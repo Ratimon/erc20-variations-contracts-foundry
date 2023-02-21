@@ -39,31 +39,31 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
     }
 
     /**
-     * @notice return amount of token received after a bonding curve purchase
-     * @param amountIn the amount of underlying used to purchase
-     * @return amountOut the amount of sale token received
+     * @notice return amount of token sale received after a bonding curve purchase
+     * @param tokenAmountIn the amount of underlying used to purchase
+     * @return balanceAmountOut the amount of sale token received
      * @dev retained poolBalance (i.e. after including the next set of added tokensupply) minus current poolBalance
     **/
-    function calculatePurchasingAmountOut(UD60x18 amountIn)
+    function calculatePurchaseAmountOut(UD60x18 tokenAmountIn)
         public
         view
         override
-        returns(UD60x18 amountOut) {
-            return getPoolBalance(totalPurchased.add(amountIn)).sub(getPoolBalance(totalPurchased));
+        returns(UD60x18 balanceAmountOut) {
+            return getPoolBalance(totalPurchased.add(tokenAmountIn)).sub(getPoolBalance(totalPurchased));
     }
 
     /**
      * @notice return amount of acceptable token received after a bonding curve buyback
-     * @param amountIn the amount of token sale used to buybacl
-     * @return amountOut the amount of acceptable token received
+     * @param balanceAmountIn the amount of token sale used to buyback
+     * @return tokenAmountOut the amount of acceptable token received
      * @dev retained poolBalance (i.e. after including the next set of reduced tokensupply) minus current poolBalance
     **/
-    function calculateBuyingBackAmountOut(UD60x18 amountIn)
+    function calculateBuybackAmountOut(UD60x18 balanceAmountIn)
         public
         view
         override
-        returns(UD60x18 amountOut) {
-            return getPoolBalance(totalPurchased).sub(getPoolBalance(totalPurchased.add(amountIn)));
+        returns(UD60x18 tokenAmountOut) {
+            return getTokenSupply(totalPurchased).sub(getTokenSupply(totalPurchased.sub(balanceAmountIn)));
     }
 }
 

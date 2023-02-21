@@ -72,4 +72,17 @@ contract TestUnitLinearCurve is StdUtils, PRBMathAssertions, ConstantsFixture {
         assertEq(actualBalance, expectedBalance);
     }
 
+    function test_getTokenSupply() external {
+        UD60x18 balanceAmountIn = ud(900e18);
+
+        UD60x18 actualTokenAmount = linearCurveContract.getTokenSupply(balanceAmountIn);
+        UD60x18 expectedTokenAmount = ud(20e18);
+
+        // 1.5/2*(20^2) + 30*(20) = 900
+        // f-1(y) = (-b + sqrt(b^2 + 2my)) / m
+        // f-1(900) = (-30 + sqrt(30^2 + 2(1.5)*900)) / 1.5 = 20
+         
+        assertEq(actualTokenAmount, expectedTokenAmount);
+    }
+
 }

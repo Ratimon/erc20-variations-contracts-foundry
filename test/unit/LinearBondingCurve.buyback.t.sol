@@ -99,34 +99,37 @@ contract TestUnitLinearBondingCurve_buyback is Test, RegisterScripts, ConstantsF
     //     vm.assume(amount0 > 0);
     // }
 
-    // function test_Constructor() public {
-    //     assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
-    // }
+    function test_Constructor() public {
+        assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
+    }
 
-    // function test_purchase_withSaleToken() public {
+    function test_buyback_stateSaleToken() public {
 
-    //     deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
-    //     vm.startPrank(alice);
+        vm.startPrank(alice);
 
-    //     uint256 alicePreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
-    //     UD60x18 preReserveBalance = linearBondingCurve.reserveBalance();
+        IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
+        uint256 purchase_amount = 7e18;
 
-    //     IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
-    //     uint256 buying_amount = 7e18;
+        linearBondingCurve.purchase(alice, purchase_amount);
 
-    //     linearBondingCurve.purchase( alice, buying_amount);
+        uint256 alicePreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
+        UD60x18 preReserveBalance = linearBondingCurve.reserveBalance();
 
-    //     uint256 alicePostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
-    //     UD60x18 postReserveBalance = linearBondingCurve.reserveBalance();
-    //     uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken ? (alicePostBalBuyingToken - alicePreBalBuyingToken) : (alicePreBalBuyingToken - alicePostBalBuyingToken);
+        // uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken ? (alicePostBalBuyingToken - alicePreBalBuyingToken) : (alicePreBalBuyingToken - alicePostBalBuyingToken);
 
-    //     assertEq(alicePostBalBuyingToken, 13e18 );
-    //     assertEq(changeInAliceBalBuyingToken, buying_amount );
-    //     assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), buying_amount );
+        // assertEq(alicePostBalBuyingToken, 13e18 );
+        // assertEq(changeInAliceBalBuyingToken, purchase_amount );
+        // assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), purchase_amount );
 
-    //     vm.stopPrank();
-    // }
+        linearBondingCurve.buyback(alice, purchase_amount);
+
+        uint256 alicePostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
+        UD60x18 postReserveBalance = linearBondingCurve.reserveBalance();
+
+        vm.stopPrank();
+    }
 
     // function test_purchase_withBuyingToken() public {
 
@@ -139,8 +142,8 @@ contract TestUnitLinearBondingCurve_buyback is Test, RegisterScripts, ConstantsF
     //     UD60x18 preAvailableToSell = linearBondingCurve.availableToSell();
 
     //     IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
-    //     uint256 buying_amount = 7e18;
-    //     UD60x18 amountOut = linearBondingCurve.purchase( alice, buying_amount);
+    //     uint256 purchase_amount = 7e18;
+    //     UD60x18 amountOut = linearBondingCurve.purchase( alice, purchase_amount);
     //     // 1.5/2*(7^2) + 30*(7) = 246.75
 
     //     uint256 alicePostBalSaleToken = IERC20(address(saleToken)).balanceOf(alice);
@@ -149,7 +152,7 @@ contract TestUnitLinearBondingCurve_buyback is Test, RegisterScripts, ConstantsF
 
     //     LinearCurve linearCurve =  LinearCurve(address(linearBondingCurve));
         
-    //     UD60x18  postSaleTokenSupply = preTotalPurchased.add(ud(buying_amount));
+    //     UD60x18  postSaleTokenSupply = preTotalPurchased.add(ud(purchase_amount));
     //     UD60x18 firstIntegral = linearCurve.getPoolBalance(postSaleTokenSupply);
     //     UD60x18 secondIntegral = linearCurve.getPoolBalance(preTotalPurchased);
     //     UD60x18 changeInSaleToken = firstIntegral.sub(secondIntegral);
