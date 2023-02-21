@@ -16,8 +16,6 @@ import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
-import "@forge-std/console2.sol";
-
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
 
     using SafeERC20 for IERC20;
@@ -191,10 +189,6 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         returns (UD60x18 balanceAmountOut)
     {
         balanceAmountOut = calculatePurchaseAmountOut(ud(tokenAmountIn));
-
-        console2.log( 'availableToSell()', unwrap(availableToSell()));
-        console2.log( 'ud(tokenAmountIn)', tokenAmountIn);
-
 
         require( gte( availableToSell(), ud(tokenAmountIn)), "BondingCurve: exceeds cap");
         _incrementTotalPurchased(balanceAmountOut);
