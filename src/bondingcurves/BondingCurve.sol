@@ -54,7 +54,6 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @notice init function to  be called after deployment
      * @dev must be atomic in one deployment scripy
     **/
-
     function init() external override initializer {
         //deployer must approve token first
         IERC20(token).safeTransferFrom(msg.sender, address(this), unwrap(cap) );
@@ -188,7 +187,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
     {
         amountOut = calculatePurchasingAmountOut(ud(amountIn));
 
-        require( gte( availableToSell(), amountOut) , "BondingCurve: exceeds cap");
+        require( gte( availableToSell(), amountOut), "BondingCurve: exceeds cap");
         _incrementTotalPurchased(amountOut);
         IERC20(token).safeTransfer(to,unwrap(amountOut));
 

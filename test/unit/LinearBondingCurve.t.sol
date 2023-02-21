@@ -103,7 +103,7 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
     }
 
-    function test_purchase_SaleToken() public {
+    function test_purchase_withSaleToken() public {
 
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
@@ -128,7 +128,7 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
         vm.stopPrank();
     }
 
-    function test_purchase_BuyingToken() public {
+    function test_purchase_withBuyingToken() public {
 
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
@@ -148,6 +148,7 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
         UD60x18 postAvailableToSell = linearBondingCurve.availableToSell();
 
         LinearCurve linearCurve =  LinearCurve(address(linearBondingCurve));
+        
         UD60x18  postSaleTokenSupply = preTotalPurchased.add(ud(buying_amount));
         UD60x18 firstIntegral = linearCurve.getPoolBalance(postSaleTokenSupply);
         UD60x18 secondIntegral = linearCurve.getPoolBalance(preTotalPurchased);

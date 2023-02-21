@@ -61,6 +61,7 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts, ConstantsFixture,
     function test_Constructor() public {
         assertEq(ISanctionRoles(address(erc1363WithSanction)).owner(), deployer);
         assertEq(ISanctionRoles(address(erc1363WithSanction)).sanctionAdmin(), deployer);
+        assertEq(ISanctionRoles(address(erc1363WithSanction)).minter(), deployer);
     }
 
     function test_RevertWhen_NotAuthorized_addToBlackList() public {
