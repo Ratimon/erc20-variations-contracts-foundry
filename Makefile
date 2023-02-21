@@ -44,9 +44,6 @@ unit-test-ERC1363WithSanction:
 unit-test-LinearBondingCurve-purchase:
 	forge test --match-path test/unit/LinearBondingCurve.purchase.t.sol -vvv
 
-unit-test-LinearBondingCurve-buyback:
-	forge test --match-path test/unit/LinearBondingCurve.buyback.t.sol -vvv
-
 unit-test-LinearCurve:
 	forge test --match-path test/unit/LinearCurve.t.sol -vvv
 

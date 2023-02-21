@@ -85,27 +85,6 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         return amountOut;
     }
 
-
-    /**
-     * @notice buyback accet token for accepted tokens
-     * @param to address to sale token
-     * @param amountIn amount of underlying sale tokens input
-     *  @return amountOut amount of accepted token received
-    **/
-    function buyback(address to, uint256 amountIn)
-        external
-        payable
-        virtual
-        override
-        whenNotPaused
-        returns (UD60x18 amountOut)
-    {
-        require(msg.value == 0, "BondingCurve: unexpected ETH input");
-
-        amountOut = _buyback(msg.sender, to, amountIn);
-        return amountOut;
-    }
-
     /**
      * @notice allocate held accepted ERC20 token
      * @param amount the amount quantity of underlying token  to allocate
@@ -174,17 +153,6 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         virtual
         returns(UD60x18);
 
-    /**
-     * @notice return amount of acceptable token received after a bonding curve buyback
-     * @param balanceAmountIn the amount of token sale used to buyback
-     * @return tokenAmountOut the amount of acceptable token received
-     * @dev retained poolBalance (i.e. after including the next set of reduced tokensupply) minus current poolBalance
-    **/
-    function calculateBuybackAmountOut(UD60x18 balanceAmountIn)
-        public
-        view
-        virtual
-        returns(UD60x18);
 
     /**
      * @notice balance of accepted token the bonding curve
@@ -236,30 +204,10 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         return balanceAmountOut;
     }
 
-    function _buyback(address operator,  address to, uint256 balanceAmountIn)
-        internal
-        returns (UD60x18 tokenAmountOut)
-    {
-        tokenAmountOut = calculateBuybackAmountOut(ud(balanceAmountIn));
-
-        console2.log( 'totalPurchased', unwrap(totalPurchased));
-        console2.log( 'tokenAmountOut', unwrap(tokenAmountOut));
-
-        require( gte( totalPurchased, tokenAmountOut), "BondingCurve: not enought balance");
-        _decrementTotalPurchased(tokenAmountOut);
-        IERC20(acceptedToken()).safeTransfer(to,unwrap(tokenAmountOut));
-
-        emit Buyback(operator,to, ud(balanceAmountIn), tokenAmountOut);
-        return tokenAmountOut;
-    }
-
     function _incrementTotalPurchased(UD60x18 amount) internal {
         totalPurchased = totalPurchased.add(amount);
     }
 
-    function _decrementTotalPurchased(UD60x18 amount) internal {
-        totalPurchased = totalPurchased.sub(amount);
-    }
 
     function _setCap(UD60x18 newCap) internal {
         if (isZero(newCap)) revert Errors.ZeroNumberNotAllowed();
@@ -269,14 +217,5 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
         emit CapUpdate(oldCap, newCap);
     }
-
-
-    // /**
-    // * @notice approves a token for this contract
-    // **/
-    // function _approveToken(address _token) internal {
-    //     uint256 maxTokens = type(uint256).max;
-    //     IERC20(_token).approve(address(this), maxTokens);
-    // }
 
 }
