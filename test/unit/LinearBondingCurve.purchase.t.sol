@@ -23,7 +23,7 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
-contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
+contract TestUnitLinearBondingCurve_purchase is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
     IERC1363WithSanction erc1363WithSanction;
     IBondingCurve linearBondingCurve;
@@ -36,7 +36,7 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
     }
 
     function setUp() public virtual {
-        vm.label(address(this), "TestUnitLinearBondingCurve");
+        vm.label(address(this), "TestUnitLinearBondingCurve_purchase");
 
         deployer = msg.sender;
         vm.label(deployer, "Deployer");

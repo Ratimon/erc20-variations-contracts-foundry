@@ -41,8 +41,8 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
     /**
      * @notice return amount of token received after a bonding curve purchase
      * @param amountIn the amount of underlying used to purchase
-     * @return amountOut the amount of token received
-     * @dev retained poolBalance (i.e. after including the next set of tokensupply) minus current poolBalance
+     * @return amountOut the amount of sale token received
+     * @dev retained poolBalance (i.e. after including the next set of added tokensupply) minus current poolBalance
     **/
     function calculatePurchasingAmountOut(UD60x18 amountIn)
         public
@@ -50,6 +50,20 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
         override
         returns(UD60x18 amountOut) {
             return getPoolBalance(totalPurchased.add(amountIn)).sub(getPoolBalance(totalPurchased));
+    }
+
+    /**
+     * @notice return amount of acceptable token received after a bonding curve buyback
+     * @param amountIn the amount of token sale used to buybacl
+     * @return amountOut the amount of acceptable token received
+     * @dev retained poolBalance (i.e. after including the next set of reduced tokensupply) minus current poolBalance
+    **/
+    function calculateBuyingBackAmountOut(UD60x18 amountIn)
+        public
+        view
+        override
+        returns(UD60x18 amountOut) {
+            return getPoolBalance(totalPurchased).sub(getPoolBalance(totalPurchased.add(amountIn)));
     }
 }
 

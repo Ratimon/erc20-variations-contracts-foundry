@@ -41,8 +41,11 @@ integration-test-ERC1363WithGodmode:
 unit-test-ERC1363WithSanction:
 	forge test --match-path test/unit/ERC1363WithSanction.t.sol -vvv
 
-unit-test-LinearBondingCurve:
-	forge test --match-path test/unit/LinearBondingCurve.t.sol -vvv
+unit-test-LinearBondingCurve-purchase:
+	forge test --match-path test/unit/LinearBondingCurve.purchase.t.sol -vvv
+
+unit-test-LinearBondingCurve-buyback:
+	forge test --match-path test/unit/LinearBondingCurve.buyback.t.sol -vvv
 
 unit-test-LinearCurve:
 	forge test --match-path test/unit/LinearCurve.t.sol -vvv

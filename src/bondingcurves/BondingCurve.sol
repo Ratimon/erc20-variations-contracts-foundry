@@ -60,11 +60,12 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         require( cap.eq(ud(IERC20(token).balanceOf(address(this)))) , "BondingCurve: must send Token to the contract first");
     }
 
-
-    /// @notice purchase token for accepted tokens
-    /// @param to address to sale token
-    /// @param amountIn amount of underlying accepted tokens input
-    /// @return amountOut amount of token sale received
+    /**
+     * @notice purchase token for accepted tokens
+     * @param to address to sale token
+     * @param amountIn amount of underlying accepted tokens input
+     *  @return amountOut amount of token sale received
+    **/
     function purchase(address to, uint256 amountIn)
         external
         payable
@@ -79,6 +80,27 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         
         acceptedToken().transferFromAndCall(to, address(this), amountIn);
 
+        return amountOut;
+    }
+
+
+    /**
+     * @notice buyback accet token for accepted tokens
+     * @param to address to sale token
+     * @param amountIn amount of underlying sale tokens input
+     *  @return amountOut amount of accepted token received
+    **/
+    function buyback(address to, uint256 amountIn)
+        external
+        payable
+        virtual
+        override
+        whenNotPaused
+        returns (UD60x18 amountOut)
+    {
+        require(msg.value == 0, "BondingCurve: unexpected ETH input");
+
+        amountOut = _buyback(msg.sender, to, amountIn);
         return amountOut;
     }
 
@@ -141,9 +163,22 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
     /**
      * @notice return amount of token received after a bonding curve purchase
      * @param amountIn the amount of underlying used to purchase
-     * @return amountOut the amount of token received
+     * @return amountOut the amount of sale token received
+     * @dev retained poolBalance (i.e. after including the next set of added tokensupply) minus current poolBalance
     **/
     function calculatePurchasingAmountOut(UD60x18 amountIn)
+        public
+        view
+        virtual
+        returns(UD60x18);
+
+    /**
+     * @notice return amount of acceptable token received after a bonding curve buyback
+     * @param amountIn the amount of token sale used to buybacl
+     * @return amountOut the amount of acceptable token received
+     * @dev retained poolBalance (i.e. after including the next set of reduced tokensupply) minus current poolBalance
+    **/
+    function calculateBuyingBackAmountOut(UD60x18 amountIn)
         public
         view
         virtual
@@ -195,8 +230,26 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         return amountOut;
     }
 
+    function _buyback(address operator,  address to, uint256 amountIn)
+        internal
+        returns (UD60x18 amountOut)
+    {
+        amountOut = calculateBuyingBackAmountOut(ud(amountIn));
+
+        require( gte( totalPurchased, amountOut), "BondingCurve: exceeds cap");
+        _decrementTotalPurchased(amountOut);
+        IERC20(acceptedToken()).safeTransfer(to,unwrap(amountOut));
+
+        emit Buyback(operator,to, ud(amountIn), amountOut);
+        return amountOut;
+    }
+
     function _incrementTotalPurchased(UD60x18 amount) internal {
         totalPurchased = totalPurchased.add(amount);
+    }
+
+    function _decrementTotalPurchased(UD60x18 amount) internal {
+        totalPurchased = totalPurchased.sub(amount);
     }
 
     function _setCap(UD60x18 newCap) internal {

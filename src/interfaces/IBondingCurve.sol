@@ -11,6 +11,8 @@ interface IBondingCurve {
 
     event Purchase(address indexed operator, address indexed to, UD60x18 amountIn, UD60x18 amountOut);
 
+    event Buyback(address indexed operator, address indexed to, UD60x18 amountIn, UD60x18 amountOut);
+
     event Allocate( address indexed caller, UD60x18 amount);
 
     event Reset(UD60x18 oldTotalPurchased);
@@ -18,6 +20,11 @@ interface IBondingCurve {
     // ----------- State changing Api -----------
 
     function purchase(address to, uint256 amountIn)
+        external
+        payable
+        returns (UD60x18 amountOut);
+
+    function buyback(address to, uint256 amountIn)
         external
         payable
         returns (UD60x18 amountOut);
