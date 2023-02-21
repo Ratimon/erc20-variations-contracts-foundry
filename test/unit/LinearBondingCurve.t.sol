@@ -12,7 +12,7 @@ import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
-import {LinearBondingCurve} from "@main/bondingcurves/LinearBondingCurve.sol";
+import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
