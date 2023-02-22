@@ -26,21 +26,11 @@ interface IAccount {
         uint256 _amount
     );
 
-    // ----------- State changing api -----------
-
-    function deposit() external;
-
    // ----------- Governor only state changing api -----------
-
-    function withdraw(address to, uint256 amount) external;
 
     function withdrawERC20(address token, address to, uint256 amount) external;
 
     function withdrawETH(address payable to, uint256 amount) external;
-    
-    // ----------- Getters -----------
-
-    function balance() external view returns (uint256);
 
 
 }

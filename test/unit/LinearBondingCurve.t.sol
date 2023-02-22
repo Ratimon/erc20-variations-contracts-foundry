@@ -17,13 +17,11 @@ import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
 
-import {LinearCurve} from "@main/pricings/LinearCurve.sol";
-
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
-contract TestUnitLinearBondingCurve_purchase is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
+contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
     IERC1363WithSanction erc1363WithSanction;
     IBondingCurve linearBondingCurve;
@@ -36,11 +34,10 @@ contract TestUnitLinearBondingCurve_purchase is Test, RegisterScripts, Constants
     }
 
     function setUp() public virtual {
-        vm.label(address(this), "TestUnitLinearBondingCurve_purchase");
+        vm.label(address(this), "TestUnitLinearBondingCurve");
 
         deployer = msg.sender;
         vm.label(deployer, "Deployer");
-
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");

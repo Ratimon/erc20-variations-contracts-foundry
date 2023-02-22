@@ -52,7 +52,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
     /**
      * @notice init function to  be called after deployment
-     * @dev must be atomic in one deployment scripy
+     * @dev must be atomic in one deployment script
     **/
     function init() external override initializer {
         //deployer must approve token first

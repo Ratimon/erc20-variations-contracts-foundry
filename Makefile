@@ -53,6 +53,9 @@ integration-test-ERC1363WithSanction:
 unit-test-SanctionRoles:
 	forge test --match-path test/unit/SanctionRoles.t.sol -vvv
 
+unit-test-TokenSale:
+	forge test --match-path test/unit/TokenSale.t.sol -vvv
+
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 

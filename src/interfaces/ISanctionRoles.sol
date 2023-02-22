@@ -11,7 +11,6 @@ interface ISanctionRoles {
     event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
     event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
 
-    event MinterSetStarted(address indexed previousMinter, address indexed newMinter);
     event MinterSet(address indexed previousMinter, address indexed newMinter);
 
     // ----------- Governor only state changing api -----------
@@ -24,7 +23,6 @@ interface ISanctionRoles {
 
     function acceptOwnership() external;
     function acceptSanctionAdmin() external;
-    function acceptMinter() external;
 
     // ----------- Getters -----------
 
@@ -35,5 +33,4 @@ interface ISanctionRoles {
     function pendingSanctionAdmin() external view returns (address);
 
     function minter() external view returns (address);
-    function pendingMinter() external view returns (address);
 }

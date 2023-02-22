@@ -26,7 +26,6 @@ contract SanctionRoles is ISanctionRoles{
      * @notice the address which is able to mint tokens eg. bonding curve contracr
     **/
     address internal _minter;
-    address internal _pendingMinter;
 
     /**
      * @notice SanctionRoles constructor
@@ -107,20 +106,7 @@ contract SanctionRoles is ISanctionRoles{
         if ( (_minter != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
         _minter = newMinter;
-        emit MinterSetStarted(_minter, newMinter);
-    }
-
-    /**
-     * @notice The new minter accepts the minter ownership transfer.
-     * Can only be called current minter.
-    **/
-    function acceptMinter() external {
-        if (_pendingMinter != msg.sender) revert Errors.NotAuthorized(msg.sender);
-
-        delete _pendingMinter;
-        address oldMinter = _minter;
-        _minter = msg.sender;
-        emit MinterSet(oldMinter, _minter);
+        emit MinterSet(_minter, newMinter);
     }
 
     /**
@@ -156,13 +142,6 @@ contract SanctionRoles is ISanctionRoles{
     **/
     function minter() external view override returns (address){
         return _minter;
-    }
-
-    /**
-     * @notice Get the pending minter of the contract.
-    **/
-    function pendingMinter() external view override returns (address){
-        return _pendingMinter;
     }
 
 }
