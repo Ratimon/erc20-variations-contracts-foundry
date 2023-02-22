@@ -59,6 +59,8 @@ unit-test-TokenSale:
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 
+coverage:
+	forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage
 
 check-api-key:
 ifndef ALCHEMY_API_KEY
