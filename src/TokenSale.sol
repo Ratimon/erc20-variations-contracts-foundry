@@ -108,23 +108,6 @@ contract TokenSale is Initializable, Ownable2Step, Account {
     }
 
     /**
-     * @notice sets the cap for the bonding curve
-     * @param _cap the cap
-    **/
-    function setCap(UD60x18 _cap) external onlyOwner {
-        _setCap(_cap);
-    }
-
-
-    /**
-     * @notice sets the price
-     * @param _price the price
-    **/
-    function setPrice(UD60x18 _price) external onlyOwner {
-        _setPrice(_price);
-    }
-
-    /**
      * @notice return amount of token sale received after a purchase
      * @param ethAmountIn the amount of underlying used to purchase
      * @return tokenAmountOut the amount of ether received
