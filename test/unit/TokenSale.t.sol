@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-// import {Test} from "@forge-std/Test.sol";
-// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Mintable} from "@main/interfaces/IERC20Mintable.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
@@ -12,7 +9,6 @@ import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {TokenSale} from "@main/TokenSale.sol";
 
-// import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
 
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";

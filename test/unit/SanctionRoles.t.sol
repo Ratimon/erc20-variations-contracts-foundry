@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
-// import {Test} from "@forge-std/Test.sol";
-// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 
@@ -9,7 +7,6 @@ import {Errors} from "@main/shared/Error.sol";
 
 import {MockSanctionRoles} from "@main/mocks/MockSanctionRoles.sol";
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
-
 
 contract TestUnitSanctionRoles is ConstantsFixture {
 

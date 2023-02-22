@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-// import {Test} from "@forge-std/Test.sol";
-// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {IERC1363WithGodmode} from "@main/interfaces/IERC1363WithGodmode.sol";

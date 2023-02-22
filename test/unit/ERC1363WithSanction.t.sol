@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-// import {Test} from "@forge-std/Test.sol";
-// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Mintable} from "@main/interfaces/IERC20Mintable.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
 import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
@@ -16,6 +14,8 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 
 contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363WithSanction {
+
+     event MinterSet(address indexed previousMinter, address indexed newMinter);
 
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
@@ -55,6 +55,26 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
         assertEq(ISanctionRoles(address(erc1363WithSanction)).sanctionAdmin(), deployer);
         assertEq(ISanctionRoles(address(erc1363WithSanction)).minter(), deployer);
     }
+
+    function test_mint() public {
+
+        vm.startPrank(deployer);
+
+        vm.expectEmit(true,true,false,false);
+        emit MinterSet(deployer,dave);
+        ISanctionRoles(address(erc1363WithSanction)).setMinter(dave);
+
+        assertEq(ISanctionRoles(address(erc1363WithSanction)).minter(), dave);
+
+        vm.stopPrank();
+        vm.startPrank(dave);
+
+        erc1363WithSanction.mint(dave, 1_000e18);
+        
+        assertEq(  IERC20(address(erc1363WithSanction)).balanceOf(dave), 1_000e18);
+
+    }
+
 
     function test_RevertWhen_NotAuthorized_addToBlackList() public {
         vm.startPrank(alice);

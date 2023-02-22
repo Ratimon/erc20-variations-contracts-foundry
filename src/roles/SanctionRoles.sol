@@ -105,8 +105,9 @@ contract SanctionRoles is ISanctionRoles{
     function setMinter(address newMinter) external {
         if ( (_minter != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
 
+        address oldMinter = _minter;
         _minter = newMinter;
-        emit MinterSet(_minter, newMinter);
+        emit MinterSet(oldMinter, newMinter);
     }
 
     /**
