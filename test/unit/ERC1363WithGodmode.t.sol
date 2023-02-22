@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Test} from "@forge-std/Test.sol";
-import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+// import {Test} from "@forge-std/Test.sol";
+// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
@@ -16,7 +16,7 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithGodmode}  from "@test/unit/utils/ERC1363WithGodmode.constructor.sol";
 
 
-contract TestUnitERC1363WithGodmode is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithGodmode {
+contract TestUnitERC1363WithGodmode is  ConstantsFixture, DeploymentERC1363WithGodmode {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -26,17 +26,10 @@ contract TestUnitERC1363WithGodmode is Test, RegisterScripts, ConstantsFixture, 
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public virtual {
+    function setUp() public  virtual override {
+        super.setUp();
         vm.label(address(this), "TestUnitERC1363WithGodmode");
-        deployer = msg.sender;
-        vm.label(deployer, "Deployer");
-
-        vm.label(alice, "Alice");
-        vm.label(bob, "Bob");
-
-        deal(alice, 1 ether);
-        deal(bob, 1 ether);
-
+        
         vm.startPrank(deployer);
 
         arg_erc1363WithGodmode.name = "Test Sanction Token";

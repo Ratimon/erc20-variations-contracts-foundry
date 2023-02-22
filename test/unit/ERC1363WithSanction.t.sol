@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Test} from "@forge-std/Test.sol";
-import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+// import {Test} from "@forge-std/Test.sol";
+// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
@@ -15,7 +15,7 @@ import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 
-contract TestUnitERC1363WithSanction is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction {
+contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363WithSanction {
 
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
@@ -26,17 +26,9 @@ contract TestUnitERC1363WithSanction is Test, RegisterScripts, ConstantsFixture,
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public virtual {
+    function setUp() public  virtual override {
+        super.setUp();
         vm.label(address(this), "TestUnitERC1363WithSanction");
-
-        deployer = msg.sender;
-        vm.label(deployer, "Deployer");
-
-        vm.label(alice, "Alice");
-        vm.label(bob, "Bob");
-
-        deal(alice, 1 ether);
-        deal(bob, 1 ether);
 
         vm.startPrank(deployer);
 

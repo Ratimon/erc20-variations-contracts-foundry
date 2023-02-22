@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-contract ConstantsFixture {
+import {Test} from "@forge-std/Test.sol";
+import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+
+contract ConstantsFixture is Test, RegisterScripts {
     uint256 public constant WAD = 1e18;
 
     uint256 constant maxUint256 = type(uint256).max;
@@ -12,5 +15,18 @@ contract ConstantsFixture {
     address public bob = address(2);
     address public carol = address(3);
     address public dave = address(4);
+
+    function setUp() public virtual {
+
+        deployer = msg.sender;
+        vm.label(deployer, "Deployer");
+
+        vm.label(alice, "Alice");
+        vm.label(bob, "Bob");
+
+        deal(alice, 1 ether);
+        deal(bob, 1 ether);
+
+    }
 
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
-import {Test} from "@forge-std/Test.sol";
-import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+// import {Test} from "@forge-std/Test.sol";
+// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 
@@ -11,7 +11,7 @@ import {MockSanctionRoles} from "@main/mocks/MockSanctionRoles.sol";
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 
 
-contract TestUnitSanctionRoles is Test, RegisterScripts, ConstantsFixture {
+contract TestUnitSanctionRoles is ConstantsFixture {
 
     event SanctionAdminSetStarted(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
     event SanctionAdminSet(address indexed previousSanctionAdmin, address indexed newSanctionAdmin);
@@ -29,17 +29,9 @@ contract TestUnitSanctionRoles is Test, RegisterScripts, ConstantsFixture {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public {
+    function setUp() public  virtual override {
+        super.setUp();
         vm.label(address(this), "TestUnitERC1363WithSanctionRoles");
-
-        deployer = msg.sender;
-        vm.label(deployer, "Deployer");
-
-        vm.label(alice, "Alice");
-        vm.label(bob, "Bob");
-
-        deal(alice, 1 ether);
-        deal(bob, 1 ether);
 
         vm.startPrank(deployer);
 

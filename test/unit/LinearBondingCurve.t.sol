@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Test} from "@forge-std/Test.sol";
-import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+// import {Test} from "@forge-std/Test.sol";
+// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
@@ -15,13 +15,13 @@ import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
-import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
+import {UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 
 import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
-contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
+contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
     IERC1363WithSanction erc1363WithSanction;
     IBondingCurve linearBondingCurve;
@@ -33,18 +33,12 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public virtual {
+    function setUp() public  virtual override {
+        super.setUp();
         vm.label(address(this), "TestUnitLinearBondingCurve");
 
-        deployer = msg.sender;
-        vm.label(deployer, "Deployer");
-
-        vm.label(alice, "Alice");
-        vm.label(bob, "Bob");
-
-        deal(alice, 1 ether);
-        deal(bob, 1 ether);
-
+        vm.startPrank(deployer);
+        
         arg_erc1363WithSanction.name = "Test Sanction Token";
         arg_erc1363WithSanction.symbol = "SANC";
         arg_erc1363WithSanction.initialOwner = msg.sender;
@@ -63,8 +57,6 @@ contract TestUnitLinearBondingCurve is Test, RegisterScripts, ConstantsFixture, 
         mockToken = new MockERC20("TestSaleToken", "TT0", 18);
         saleToken = IERC20(address(mockToken));
         vm.label(address(saleToken), "TestSaleToken");
-
-        vm.startPrank(deployer);
 
         arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
         arg_linearBondingCurve.token = IERC20(address(saleToken));

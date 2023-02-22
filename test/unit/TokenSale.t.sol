@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Test} from "@forge-std/Test.sol";
-import {RegisterScripts, console} from "@script/RegisterScripts.sol";
+// import {Test} from "@forge-std/Test.sol";
+// import {RegisterScripts, console} from "@script/RegisterScripts.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Mintable} from "@main/interfaces/IERC20Mintable.sol";
@@ -19,7 +19,7 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentTokenSale}  from "@test/unit/utils/TokenSale.constructor.sol";
 
-contract TestUnitTokenSale is Test, RegisterScripts, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentTokenSale{
+contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, DeploymentTokenSale{
 
     IERC1363WithSanction erc1363WithSanction;
     TokenSale tokenSaleContract;
@@ -28,25 +28,9 @@ contract TestUnitTokenSale is Test, RegisterScripts, ConstantsFixture, Deploymen
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public virtual {
+    function setUp() public virtual override {
+         super.setUp();
         vm.label(address(this), "TestUnitTokenSale");
-
-        deployer = msg.sender;
-        vm.label(deployer, "Deployer");
-
-        vm.label(alice, "Alice");
-        vm.label(bob, "Bob");
-
-        deal(alice, 1 ether);
-        deal(bob, 1 ether);
-
-
-        vm.label(address(erc1363WithSanction), "erc1363WithSanction");
-
-        // mockToken = new MockERC20("TestSaleToken", "TT0", 18);
-        // saleToken = IERC20(address(mockToken));
-
-        // vm.label(address(saleToken), "TestSaleToken");
 
         vm.startPrank(deployer);
 
