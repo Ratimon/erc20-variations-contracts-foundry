@@ -32,10 +32,6 @@ interface IBondingCurve {
 
     function unpause() external;
 
-    function reset() external;
-
-    function setCap(UD60x18 newCap) external;
-
     // ----------- Getters -----------
 
     function getCurrentPrice() external view returns (UD60x18);

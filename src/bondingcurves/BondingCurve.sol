@@ -107,23 +107,6 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         _unpause();
     }
 
-    /**
-     * @notice resets the totalPurchased
-    **/
-    function reset() external override onlyOwner {
-        UD60x18 oldTotalPurchased = totalPurchased;
-        totalPurchased = ud(0e18);
-        emit Reset(oldTotalPurchased);
-    }
-
-    /**
-     * @notice sets the cap for the bonding curve
-     * @param _cap the cap
-    **/
-    function setCap(UD60x18 _cap) external override onlyOwner {
-        _setCap(_cap);
-    }
-
 
     /**
      * @notice returns how close to the cap we are
