@@ -7,6 +7,7 @@ import {IERC20Mintable} from "@main/interfaces/IERC20Mintable.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import {Errors} from "@main/shared/Error.sol";
 import {Account} from "@main/finance/Account.sol";
@@ -15,7 +16,7 @@ import { UD60x18,ud, unwrap} from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
 
-contract TokenSale is Initializable, Ownable2Step, Account {
+contract TokenSale is Initializable, Ownable2Step, ReentrancyGuard, Account {
     using SafeERC20 for IERC20;
 
     /**
@@ -71,7 +72,7 @@ contract TokenSale is Initializable, Ownable2Step, Account {
      * @notice Buy tokens with ether
      * @param ethAmountIn Amount of token to send
     **/
-    function buy(uint256 ethAmountIn) external payable returns (UD60x18 tokenAmountOut){
+    function buy(uint256 ethAmountIn) external payable nonReentrant() returns (UD60x18 tokenAmountOut){
 
         require(msg.value >= ethAmountIn, "Not enough ether");
         tokenAmountOut= calculatePurchaseAmountOut(ud(ethAmountIn));
