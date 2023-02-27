@@ -31,6 +31,7 @@ contract SanctionRoles is ISanctionRoles{
      * @notice SanctionRoles constructor
      * @param initialOwner initial owner
      * @param initialSanctionAdmin initial admin who is able to sanction
+     * @param initialMinter initial minter
     **/
     constructor(
         address initialOwner,
