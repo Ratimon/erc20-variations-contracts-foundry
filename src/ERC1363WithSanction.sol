@@ -70,7 +70,7 @@ contract ERC1363WithSanction is IERC1363WithSanction, ERC1363Base, SanctionRoles
         emit BlackListAdded(_blacklist);
     }
 
-        /**
+    /**
      * @notice remove an address to sanction list
      * @param _blacklist account to be sanctioned
      */
