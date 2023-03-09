@@ -59,6 +59,9 @@ unit-test-TokenSale:
 # integration-coverage-ERC1363WithSanction:
 # 	forge coverage --match-contract TestERC1363WithSanction --fork-url  $(call local_network,8545) -vvv
 
+snapshot-TokenSale:
+	forge snapshot --match-path test/unit/TokenSale.t.so --no-match-test "test(Fork)?(Fuzz)?_RevertWhen_\w{1,}?"
+
 coverage:
 	forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage
 
