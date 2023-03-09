@@ -62,8 +62,15 @@ unit-test-TokenSale:
 snapshot-TokenSale:
 	forge snapshot --match-path test/unit/TokenSale.t.so --no-match-test "test(Fork)?(Fuzz)?_RevertWhen_\w{1,}?"
 
+# audit
 coverage:
 	forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage
+
+slither-findings-TokenSale:
+	slither src/TokenSale.sol --solc-remaps "@openzeppelin/=lib/openzeppelin-contracts/ @main/=src/ @prb-math/=lib/prb-math/src/"
+
+slither-findings-LinearBondingCurve:
+	slither src/LinearBondingCurve.sol  --solc-remaps "@openzeppelin/=lib/openzeppelin-contracts/ @main/=src/ @prb-math/=lib/prb-math/src/"
 
 check-api-key:
 ifndef ALCHEMY_API_KEY
