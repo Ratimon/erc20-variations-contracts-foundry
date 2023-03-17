@@ -72,6 +72,9 @@ slither-findings-TokenSale:
 slither-findings-LinearBondingCurve:
 	slither src/LinearBondingCurve.sol  --solc-remaps "@openzeppelin/=lib/openzeppelin-contracts/ @main/=src/ @prb-math/=lib/prb-math/src/"
 
+# invariant-LinearBondingCurve:
+# 	forge test --match-path test/invariant/LinearBondingCurve.invariants.t.sol -vvv
+
 check-api-key:
 ifndef ALCHEMY_API_KEY
 	$(error ALCHEMY_API_KEY is undefined)
