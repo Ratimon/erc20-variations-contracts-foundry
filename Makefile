@@ -75,6 +75,9 @@ slither-findings-LinearBondingCurve:
 # invariant-LinearBondingCurve:
 # 	forge test --match-path test/invariant/LinearBondingCurve.invariants.t.sol -vvv
 
+echidna-LinearBondingCurve:
+	echidna test/echidna/FuzzLinearBondingCurve.sol --contract EchidnaFuzzLinearBondingCurve --config test/echidna/LinearBondingCurve.yml
+
 check-api-key:
 ifndef ALCHEMY_API_KEY
 	$(error ALCHEMY_API_KEY is undefined)

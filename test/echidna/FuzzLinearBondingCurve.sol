@@ -19,6 +19,10 @@ import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve
 
 contract Deployer is  DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
+    event Debug(uint256 index);
+
+    address echidna_caller = msg.sender;
+
     function deployAll() public returns(address erc1363WithSanction, address saleToken,address linearBondingCurve) {
 
         arg_erc1363WithSanction.name = "Test Sanction Token";
@@ -52,7 +56,11 @@ contract Deployer is  DeploymentERC1363WithSanction, DeploymentLinearBondingCurv
         ));
 
         IERC20(saleToken).approve(address(linearBondingCurve),type(uint256).max);
-        IBondingCurve(address(linearBondingCurve)).init();
+
+        MockERC20(saleToken).mint( address(linearBondingCurve), arg_linearBondingCurve._cap);
+
+        // IBondingCurve(address(linearBondingCurve)).init();
+        emit Debug(2);
     }
 
 }
@@ -65,13 +73,47 @@ contract EchidnaFuzzLinearBondingCurve {
     address saleToken;
     address linearBondingCurve;
 
-    constructor() public {
+    constructor() {
         (erc1363WithSanction, saleToken, linearBondingCurve) = (new Deployer()).deployAll();
     }
 
-    // function echidna_test_curve() public view returns (bool) {
-    //     return linearBondingCurve();
-    // }
+    // system level
+
+    // section: owner 
+    
+    // section: time
+
+    // section: logic
+
+    // totalSupply_exceeded: totalSupply never get higher than cap
+
+    function echidna_test_totalSupply_not_exceed_cap() public view {
+        assert( IERC20(saleToken).balanceOf(linearBondingCurve) <= unwrap(IBondingCurve(linearBondingCurve).cap()) );
+    }
+
+    // totalPurchased + avalableToSell = cap
+
+    // avalableToSeill > 0
+
+    // avalableToSell == IERC20(token).balanceOf(curve)
+
+    //  Poolbalance =  y = f ( x = supply 
+    
+
+    // ** The integral: pool balance = y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
+
+    //
+
+    // function level
+
+    // test_purchase
+
+    // State before the "action"
+    // uint256 prePurchaseBalance = stakerContract.stakedBalances(address(this));
+    // Action
+    // Post-condition
+
+    // reserveBalance
 
 }
 

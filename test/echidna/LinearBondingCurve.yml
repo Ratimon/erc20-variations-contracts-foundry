@@ -1,0 +1,18 @@
+#https://github.com/crytic/echidna/wiki/Config
+
+testMode: "assertion"
+corpusDir: coverage
+format: "text"
+
+testLimit: 500000
+shrinkLimit: 10000
+# propMaxGas: 80000300
+
+# 0x6000 = 24576
+# 0xC350 = 50000
+codeSize: 0xC350
+
+cryticArgs: [
+  "--solc-remaps",
+  "@main/=src/ @test/=test/ @openzeppelin/=lib/openzeppelin-contracts/ @prb-math/=lib/prb-math/src/ @prb-test/=lib/prb-test/src/ @solmate/=lib/solmate/src/"
+  ]

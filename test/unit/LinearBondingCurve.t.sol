@@ -23,7 +23,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
     IERC1363WithSanction erc1363WithSanction;
     IBondingCurve linearBondingCurve;
 
-    MockERC20 mockToken;
+    // MockERC20 mockToken;
     IERC20 saleToken;
 
     function setUpScripts() internal virtual override {
@@ -51,8 +51,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         );
          vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
-        mockToken = new MockERC20("TestSaleToken", "TT0", 18);
-        saleToken = IERC20(address(mockToken));
+        saleToken = IERC20(address( new MockERC20("TestSaleToken", "TT0", 18)));
         vm.label(address(saleToken), "TestSaleToken");
 
         arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
@@ -89,7 +88,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
     }
 
-    function test_purchase_stateSaleToken() public {
+    function test_purchase_statBuyingToken() public {
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
         vm.startPrank(alice);
@@ -113,7 +112,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         vm.stopPrank();
     }
 
-    function test_purchase_stateBuyingToken() public {
+    function test_purchase_stateSaleToken() public {
 
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
@@ -134,7 +133,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
 
         LinearCurve linearCurve =  LinearCurve(address(linearBondingCurve));
         
-        UD60x18  postSaleTokenSupply = preTotalPurchased.add(ud(purchase_amount));
+        UD60x18 postSaleTokenSupply = preTotalPurchased.add(ud(purchase_amount));
         UD60x18 firstIntegral = linearCurve.getPoolBalance(postSaleTokenSupply);
         UD60x18 secondIntegral = linearCurve.getPoolBalance(preTotalPurchased);
         UD60x18 changeInSaleToken = firstIntegral.sub(secondIntegral);

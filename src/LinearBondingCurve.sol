@@ -42,7 +42,7 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
      * @notice return amount of token sale received after a bonding curve purchase
      * @param tokenAmountIn the amount of underlying used to purchase
      * @return balanceAmountOut the amount of sale token received
-     * @dev retained poolBalance (i.e. after including the next set of added tokensupply) minus current poolBalance
+     * @dev retained poolBalance (i.e. after including the next set of added token supply) minus current poolBalance
     **/
     function calculatePurchaseAmountOut(UD60x18 tokenAmountIn)
         public
