@@ -10,13 +10,14 @@ import {Errors} from "@main/shared/Error.sol";
 import {ERC1363PayableBase} from "@main/base/ERC1363PayableBase.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Timed} from "@main/utils/Timed.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
 import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
 
-abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step {
+abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step, Timed {
 
     using SafeERC20 for IERC20;
 
@@ -39,15 +40,19 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @notice BondingCurve constructor
      * @param _acceptedToken ERC20 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
+     * @param _duration duration to sell
      * @param _cap maximum token sold for this bonding curve to ensure security
     **/
     constructor(
         IERC1363 _acceptedToken,
         IERC20 _token,
+        uint256 _duration,
         uint256 _cap
-        ) ERC1363PayableBase(_acceptedToken){
+        ) ERC1363PayableBase(_acceptedToken) Timed(_duration){
 
         token = _token;
+        // start timer
+        _initTimed();
         _setCap(ud(_cap));
     }
 
@@ -73,6 +78,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         virtual
         override
         whenNotPaused
+        duringTime
         returns (UD60x18 amountOut)
     {
         require(msg.value == 0, "BondingCurve: unexpected ETH input");
@@ -89,7 +95,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param amount the amount quantity of underlying token  to allocate
      * @param to address destination
     **/
-    function allocate(uint256 amount, address to) external virtual override onlyOwner {
+    function allocate(uint256 amount, address to) external virtual override onlyOwner afterTime {
         SafeERC20.safeTransfer(acceptedToken(), to, amount);
         emit Allocate(msg.sender, ud(amount));
     }

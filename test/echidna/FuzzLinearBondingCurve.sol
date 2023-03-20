@@ -43,13 +43,15 @@ contract Deployer is  DeploymentERC1363WithSanction, DeploymentLinearBondingCurv
 
         arg_linearBondingCurve.acceptedToken = IERC1363(erc1363WithSanction);
         arg_linearBondingCurve.token = IERC20(saleToken);
+        arg_linearBondingCurve._duration = 1 weeks;
         arg_linearBondingCurve._cap = 1_000_000e18;
         arg_linearBondingCurve._slope = 1.5e18;
         arg_linearBondingCurve._initialPrice = 30e18;
         
         linearBondingCurve = address(new LinearBondingCurve(
             arg_linearBondingCurve.acceptedToken,
-            arg_linearBondingCurve.token, 
+            arg_linearBondingCurve.token,
+            arg_linearBondingCurve._duration,
             arg_linearBondingCurve._cap,
             arg_linearBondingCurve._slope,
             arg_linearBondingCurve._initialPrice

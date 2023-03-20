@@ -14,6 +14,7 @@ contract DeploymentLinearBondingCurve {
     struct Constructors_linearBondingCurve {
         IERC1363 acceptedToken;
         IERC20 token;
+        uint256 _duration;
         uint256 _cap;
         uint256 _slope;
         uint256 _initialPrice;
@@ -31,6 +32,7 @@ contract DeploymentLinearBondingCurve {
         linearBondingCurve = address(new LinearBondingCurve(
             arg_linearBondingCurve_.acceptedToken,
             arg_linearBondingCurve_.token, 
+            arg_linearBondingCurve_._duration,
             arg_linearBondingCurve_._cap,
             arg_linearBondingCurve_._slope,
             arg_linearBondingCurve_._initialPrice
