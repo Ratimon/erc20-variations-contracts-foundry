@@ -19,6 +19,9 @@ import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve
 import { InvariantOwner }   from "./handlers/Owner.sol";
 import { InvariantBuyerManager }   from "./handlers/Buyer.sol";
 
+import {LinearCurve} from "@main/pricings/LinearCurve.sol";
+
+
 
 // Invariant 1: totalPurchased + avalableToSell = cap
 // Invariant 2: avalableToSell >= 0
@@ -92,6 +95,24 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
     // Invariant 1: totalPurchased + avalableToSell = cap
     function invariant_totalPurchasedPlusAvalableToSell_eq_cap() public {
         assertEq( unwrap(linearBondingCurve.totalPurchased().add(linearBondingCurve.availableToSell())), unwrap(linearBondingCurve.cap()) );
+    }
+
+    // Invariant 2: avalableToSell >= 0
+    function invariant_AvalableToSell_gt_zero() public {
+        assertGt( unwrap(linearBondingCurve.availableToSell()), 0 );
+    }
+
+    // Invariant 3: avalableToSell = IERC20(token).balanceOf(curve)
+    function invariant_AvalableToSell_eq_saleTokenBalance() public {
+        assertEq( unwrap(linearBondingCurve.availableToSell()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
+    }
+
+    // Invariant 4: Poolbalance =   y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
+    function invariant_Poolbalance_eq_saleTokenBalance() public {
+
+        UD60x18 buyTokenSupply = ud( IERC20(buyToken).balanceOf(address(linearBondingCurve)) );
+
+        assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
     }
 
 
