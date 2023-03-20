@@ -15,7 +15,7 @@ import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSancti
 
 contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363WithSanction {
 
-     event MinterSet(address indexed previousMinter, address indexed newMinter);
+    event MinterSet(address indexed previousMinter, address indexed newMinter);
 
     event BlackListAdded(address indexed blacklist);
     event BlackListRemoved(address indexed blacklist);
