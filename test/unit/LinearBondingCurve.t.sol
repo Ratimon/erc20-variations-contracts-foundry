@@ -42,13 +42,8 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
         arg_erc1363WithSanction.initialMinter = msg.sender;
 
-        erc1363WithSanction = new ERC1363WithSanction(
-            arg_erc1363WithSanction.name,
-            arg_erc1363WithSanction.symbol,
-            arg_erc1363WithSanction.initialOwner,
-            arg_erc1363WithSanction.initialSanctionAdmin,
-            arg_erc1363WithSanction.initialMinter
-        );
+        erc1363WithSanction = IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup( arg_erc1363WithSanction ));
+
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
         saleToken = IERC20(address( new MockERC20("TestSaleToken", "TT0", 18)));
@@ -60,19 +55,9 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         arg_linearBondingCurve._slope = 1.5e18;
         arg_linearBondingCurve._initialPrice = 30e18;
         
-        linearBondingCurve = new LinearBondingCurve(
-            arg_linearBondingCurve.acceptedToken,
-            arg_linearBondingCurve.token, 
-            arg_linearBondingCurve._cap,
-            arg_linearBondingCurve._slope,
-            arg_linearBondingCurve._initialPrice
-        );
+        linearBondingCurve = IBondingCurve(DeploymentLinearBondingCurve.deployAndSetup(saleToken,  deployer, arg_linearBondingCurve, dealERC20 ));
 
         vm.label(address(linearBondingCurve), "linearBondingCurve");
-
-        IERC20(saleToken).approve(address(linearBondingCurve),maxUint256);
-        deal({token : address(saleToken), to: deployer, give: arg_linearBondingCurve._cap });
-        linearBondingCurve.init();
 
         vm.stopPrank();
     }
@@ -83,6 +68,10 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
     //     vm.assume(owner != to);
     //     vm.assume(amount0 > 0);
     // }
+
+    function dealERC20(address saleToken_, address deployer_, uint256 cap_ ) internal {
+        deal({token : saleToken_, to: deployer_, give: cap_ });
+    }
 
     function test_Constructor() public {
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );

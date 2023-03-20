@@ -37,14 +37,8 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
         arg_erc1363WithSanction.initialOwner = msg.sender;
         arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
         arg_erc1363WithSanction.initialMinter = msg.sender;
+        erc1363WithSanction = IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup( arg_erc1363WithSanction ));
 
-        erc1363WithSanction = new ERC1363WithSanction(
-            arg_erc1363WithSanction.name,
-            arg_erc1363WithSanction.symbol,
-            arg_erc1363WithSanction.initialOwner,
-            arg_erc1363WithSanction.initialSanctionAdmin,
-            arg_erc1363WithSanction.initialMinter
-        );
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
         vm.stopPrank();
