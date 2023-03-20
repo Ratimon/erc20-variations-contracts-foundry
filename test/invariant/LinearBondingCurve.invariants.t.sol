@@ -10,7 +10,6 @@ import {Test} from "@forge-std/Test.sol";
 import {StdInvariant} from "@forge-std/StdInvariant.sol";
 
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
-import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
 import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
 import {UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
@@ -24,14 +23,11 @@ import { InvariantBuyerManager }   from "./handlers/Buyer.sol";
 
 
 // Invariant 1: totalPurchased + avalableToSell = cap
-// Invariant 2: avalableToSeill >= 0
+// Invariant 2: avalableToSell >= 0
 // Invariant 3: avalableToSell = IERC20(token).balanceOf(curve)
 // Invariant 4: Poolbalance =   y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
 
-
 contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve  {
-
-    // Handler public handler;
 
     InvariantOwner internal _owner;
     InvariantBuyerManager internal _buyerManager;
@@ -39,7 +35,6 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
     IERC20 buyToken;
     IERC20 saleToken;
     IBondingCurve linearBondingCurve;
-
 
     function setUp() public override {
         vm.label(address(this), "LinearBondingCurveInvariants");
@@ -73,21 +68,11 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         arg_linearBondingCurve._slope = 1.5e18;
         arg_linearBondingCurve._initialPrice = 30e18;
 
-        linearBondingCurve = new LinearBondingCurve(
-            arg_linearBondingCurve.acceptedToken,
-            arg_linearBondingCurve.token, 
-            arg_linearBondingCurve._cap,
-            arg_linearBondingCurve._slope,
-            arg_linearBondingCurve._initialPrice
-        );
+        linearBondingCurve = IBondingCurve(DeploymentLinearBondingCurve.deployAndSetup(saleToken,  deployer, arg_linearBondingCurve, dealERC20 ));
 
+        vm.label(address(buyToken), "TestBuyToken");
         vm.label(address(saleToken), "TestSaleToken");
-        vm.label(address(saleToken), "TestBuyToken");
         vm.label(address(linearBondingCurve), "linearBondingCurve");
-
-        IERC20(saleToken).approve(address(linearBondingCurve),maxUint256);
-        deal({token : address(saleToken), to: deployer, give: arg_linearBondingCurve._cap });
-        linearBondingCurve.init();
 
         vm.stopPrank();
 
@@ -101,13 +86,17 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         // selectors[0] = Handler.__.selector;
         // targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
 
-
         targetContract(address(_owner));
         targetContract(address(_buyerManager));
 
-
         _buyerManager.createBuyer();
     }
+
+    function dealERC20(address saleToken_, address deployer_, uint256 cap_ ) internal {
+        deal({token : saleToken_, to: deployer_, give: cap_ });
+    }
+
+    // function deal(address token, address to, uint256 give) internal virtual {
 
     function test_Constructor() public {
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
