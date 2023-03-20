@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity  =0.8.17;
+pragma solidity =0.8.19;
 
 import { powu, sqrt } from "@prb-math/ud60x18/Math.sol";
 import { UD60x18, ud } from "@prb-math/UD60x18.sol";

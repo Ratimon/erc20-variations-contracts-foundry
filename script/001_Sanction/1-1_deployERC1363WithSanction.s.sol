@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.8.17;
+pragma solidity =0.8.19;
 
 import {ERC1363WithSanctionSetupScript} from "./1-1_SetupERC1363WithSanction.sol";
 
