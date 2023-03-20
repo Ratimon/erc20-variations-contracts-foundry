@@ -19,8 +19,6 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
-
-// import {Handler} from "./handlers/Handler.sol";
 import { InvariantOwner }   from "./handlers/Owner.sol";
 import { InvariantBuyerManager }   from "./handlers/Buyer.sol";
 
@@ -31,7 +29,7 @@ import { InvariantBuyerManager }   from "./handlers/Buyer.sol";
 // Invariant 4: Poolbalance =   y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
 
 
-contract LinearBondingCurveInvariants is StdInvariant, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve  {
+contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve  {
 
     // Handler public handler;
 
@@ -66,7 +64,6 @@ contract LinearBondingCurveInvariants is StdInvariant, ConstantsFixture, Deploym
             arg_erc1363WithSanction.initialMinter
         );
 
-        // buyToken = IERC20(address( new MockERC20("TestBuyToken", "BUY", 18) ) );
         saleToken = IERC20(address(new MockERC20("TestSaleToken", "SELL", 18)));
         
 
@@ -101,10 +98,10 @@ contract LinearBondingCurveInvariants is StdInvariant, ConstantsFixture, Deploym
         vm.label(address(_buyerManager), "BuyerManager");
 
         // bytes4[] memory selectors = new bytes4[](1);
-
-        // selectors[0] = Handler.exploit.selector;
-
+        // selectors[0] = Handler.__.selector;
         // targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
+
+
         targetContract(address(_owner));
         targetContract(address(_buyerManager));
 
@@ -114,6 +111,11 @@ contract LinearBondingCurveInvariants is StdInvariant, ConstantsFixture, Deploym
 
     function test_Constructor() public {
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
+    }
+
+    // Invariant 1: totalPurchased + avalableToSell = cap
+    function invariant_totalPurchasedPlusAvalableToSell_eq_cap() public {
+        assertEq( unwrap(linearBondingCurve.totalPurchased().add(linearBondingCurve.availableToSell())), unwrap(linearBondingCurve.cap()) );
     }
 
 

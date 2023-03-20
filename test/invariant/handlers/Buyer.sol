@@ -27,7 +27,7 @@ contract InvariantBuyer is Test {
 
     function purchase(uint256 amount_) external {
 
-        amount_ = bound(amount_, 1, 30e18 );  
+        amount_ = bound(amount_, 1, 1e29 );  // 100 billion at WAD precision
 
         uint256 startingBuyBalance = _underlyingBuyToken.balanceOf(address(this));
         uint256 startingSaleBalance = _underlyingSaleToken.balanceOf(address(this));

@@ -13,7 +13,6 @@ import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
 contract InvariantOwner is CommonBase, StdCheats, StdUtils {
 
-
     LinearBondingCurve   bondingCurve;
     MockERC20 underlyingBuyToken;
     MockERC20 underlyingSaleToken;

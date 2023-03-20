@@ -14,8 +14,8 @@ LOCAL = "${LOCAL_RPC_URL}"
 
 [invariant]
 call_override = false  # Override calls
-runs          = 1000    # The number of times to run the invariant tests
-depth         = 1   # The number of calls to make in the invariant tests
+runs          = 5000    # The number of times to run the invariant tests
+depth         = 20   # The number of calls to make in the invariant tests
 
 [profile.no_revert.invariant]
 fail_on_revert = false  
