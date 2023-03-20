@@ -49,7 +49,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
             arg_erc1363WithSanction.initialSanctionAdmin,
             arg_erc1363WithSanction.initialMinter
         );
-         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
+        vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
         saleToken = IERC20(address( new MockERC20("TestSaleToken", "TT0", 18)));
         vm.label(address(saleToken), "TestSaleToken");

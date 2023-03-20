@@ -85,24 +85,14 @@ contract EchidnaFuzzLinearBondingCurve {
 
     // section: logic
 
-    // totalSupply_exceeded: totalSupply never get higher than cap
+    // Invariant 1: totalPurchased + avalableToSell = cap
+    // Invariant 2: avalableToSeill >= 0
+    // Invariant 3: avalableToSell = IERC20(token).balanceOf(curve)
+    // Invariant 4: Poolbalance =   y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
 
     function echidna_test_totalSupply_not_exceed_cap() public view {
         assert( IERC20(saleToken).balanceOf(linearBondingCurve) <= unwrap(IBondingCurve(linearBondingCurve).cap()) );
     }
-
-    // totalPurchased + avalableToSell = cap
-
-    // avalableToSeill > 0
-
-    // avalableToSell == IERC20(token).balanceOf(curve)
-
-    //  Poolbalance =  y = f ( x = supply 
-    
-
-    // ** The integral: pool balance = y = f(x = supply) =  slope/2 * (currentTokenPurchased)^2 + initialPrice * (currentTokenPurchased)
-
-    //
 
     // function level
 

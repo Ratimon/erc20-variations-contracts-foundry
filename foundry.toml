@@ -12,5 +12,16 @@ ARBITRUM = "${ARBITRUM_RPC_URL}"
 OPTIMISM = "${OPTIMISM_RPC_URL}"
 LOCAL = "${LOCAL_RPC_URL}"
 
+[invariant]
+call_override = false  # Override calls
+runs          = 1000    # The number of times to run the invariant tests
+depth         = 1   # The number of calls to make in the invariant tests
+
+[profile.no_revert.invariant]
+fail_on_revert = false  
+
+[profile.allow_revert.invariant]
+fail_on_revert = true 
+
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
