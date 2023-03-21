@@ -73,7 +73,10 @@ slither-findings-LinearBondingCurve:
 	slither src/LinearBondingCurve.sol  --solc-remaps "@openzeppelin/=lib/openzeppelin-contracts/ @main/=src/ @prb-math/=lib/prb-math/src/"
 
 invariant-LinearBondingCurve:
-	forge test --match-path test/invariant/LinearBondingCurve.invariants.t.sol -vvv
+	forge test --match-path test/invariant/LinearBondingCurve.invariants.t.sol -vvvv
+
+invariant-call-summary:
+	forge test  -m invariant_callSummary -vv
 
 # echidna-LinearBondingCurve:
 # 	echidna test/echidna/FuzzLinearBondingCurve.sol --contract EchidnaFuzzLinearBondingCurve --config test/echidna/LinearBondingCurve.yml

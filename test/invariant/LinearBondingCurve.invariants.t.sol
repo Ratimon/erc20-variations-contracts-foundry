@@ -23,8 +23,6 @@ import { Warper }  from "./handlers/Warper.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
-
-
 // Invariant 1: totalPurchased + avalableToSell = cap
 // Invariant 2: avalableToSell >= 0
 // Invariant 3: avalableToSell = IERC20(token).balanceOf(curve)
@@ -41,9 +39,11 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
     IBondingCurve linearBondingCurve;
 
     function setUp() public override {
+        super.setUp();
         vm.label(address(this), "LinearBondingCurveInvariants");
 
         vm.startPrank(deployer);
+        vm.warp(staticTime );
 
         // owner
         // buyer
@@ -70,36 +70,48 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         vm.label(address(saleToken), "TestSaleToken");
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
-        _owner = new InvariantOwner(address(linearBondingCurve), address(buyToken),  address(saleToken));
-        _buyerManager = new InvariantBuyerManager(address(linearBondingCurve), address(buyToken),  address(saleToken));
+        _buyerManager = new InvariantBuyerManager(address(linearBondingCurve), address(buyToken),  address(saleToken) );
         _warper = new Warper(address(linearBondingCurve));
-
-        vm.label(address(_owner), "Owner");
+        _owner = new InvariantOwner(address(linearBondingCurve), address(buyToken), address(saleToken), staticTime);
+        
         vm.label(address(_buyerManager), "BuyerManager");
-
-        // bytes4[] memory selectors = new bytes4[](1);
-        // selectors[0] = Handler.__.selector;
-        // targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
-
-        // Performs random allocate() calls
-        targetContract(address(_owner));
-         // Performs random purchase() calls
-        targetContract(address(_buyerManager));
-        // Performs random warps forward in time
-        targetContract(address(_warper));
-
-        _buyerManager.createBuyer();
+        vm.label(address(_warper), "Warper");
+        vm.label(address(_owner), "Owner");
+       
 
         Ownable2Step(address(linearBondingCurve)).transferOwnership(address(_owner));
+
         vm.stopPrank();
 
         vm.startPrank(address(_owner));
-
         Ownable2Step(address(linearBondingCurve)).acceptOwnership();
-        
         vm.stopPrank();
 
+        vm.startPrank(deployer);
+       
 
+        bytes4[] memory selectors = new bytes4[](1);
+        selectors[0] = InvariantBuyerManager.purchase.selector;
+
+        // Performs random purchase() calls
+        targetSelector(FuzzSelector({addr: address(_buyerManager), selectors: selectors}));
+        targetContract(address(_buyerManager));
+
+        selectors[0] = Warper.warp.selector;
+        // Performs random warps forward in time
+        targetSelector(FuzzSelector({addr: address(_warper), selectors: selectors}));
+        targetContract(address(_warper));
+
+        selectors[0] = InvariantOwner.allocate.selector;
+        // Performs random allocate() calls
+        targetSelector(FuzzSelector({addr: address(_owner), selectors: selectors}));
+        targetContract(address(_owner));
+
+
+        _buyerManager.createBuyer();
+
+       
+        vm.stopPrank();
        
     }
 
@@ -132,6 +144,14 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         UD60x18 buyTokenSupply = ud( IERC20(buyToken).balanceOf(address(linearBondingCurve)) );
 
         assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
+    }
+
+    function invariant_callSummary() public view {
+        _buyerManager.callSummary();
+        _warper.callSummary();
+        _owner.callSummary();
+        
+
     }
 
 

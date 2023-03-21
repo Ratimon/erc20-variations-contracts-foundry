@@ -18,6 +18,8 @@ import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
 import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+
 contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
 
     IERC1363WithSanction erc1363WithSanction;
@@ -35,7 +37,8 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         vm.label(address(this), "TestUnitLinearBondingCurve");
 
         vm.startPrank(deployer);
-        
+        vm.warp(staticTime );
+
         arg_erc1363WithSanction.name = "Test Sanction Token";
         arg_erc1363WithSanction.symbol = "SANC";
         arg_erc1363WithSanction.initialOwner = msg.sender;
@@ -60,6 +63,8 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
 
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
+        // Ownable2Step(address(linearBondingCurve)).acceptOwnership();
+        
         vm.stopPrank();
     }
 
@@ -135,6 +140,46 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         assertEq(unwrap(postTotalPurchased), unwrap(amountOut) );
         assertEq(unwrap(postTotalPurchased.sub(preTotalPurchased)),unwrap(changeInSaleToken) );
         assertEq(unwrap(postAvailableToSell), unwrap(preAvailableToSell.sub(changeInSaleToken)));
+
+
+        // UD60x18 buyTokenSupply = ud( IERC20(address(erc1363WithSanction)).balanceOf(address(linearBondingCurve)) );
+        // assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
+
+        vm.stopPrank();
+    }
+
+
+    function test_allocate() public {
+
+        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+
+        vm.startPrank(alice);
+        vm.warp(staticTime + 1 days );
+
+
+        IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
+        uint256 purchase_amount = 7e18;
+
+        linearBondingCurve.purchase( alice, purchase_amount);
+
+        vm.stopPrank();
+
+        vm.startPrank(deployer);
+        vm.warp(staticTime + 3 weeks );
+
+        uint256 deployerPreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(deployer);
+        uint256 allocate_amount = 5e18;
+
+        linearBondingCurve.allocate( allocate_amount, deployer);
+
+        uint256 deployerPostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(deployer);
+        uint256 changeInDeployerBalBuyingToken = deployerPostBalBuyingToken > deployerPreBalBuyingToken ? (deployerPostBalBuyingToken - deployerPreBalBuyingToken) : (deployerPreBalBuyingToken - deployerPostBalBuyingToken);
+
+        assertEq(deployerPostBalBuyingToken, 5e18 );
+        assertEq(changeInDeployerBalBuyingToken, allocate_amount );
+
+        // UD60x18 buyTokenSupply = ud( IERC20(address(erc1363WithSanction)).balanceOf(address(linearBondingCurve)) );
+        // assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
 
         vm.stopPrank();
     }

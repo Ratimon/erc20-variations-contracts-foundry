@@ -14,13 +14,25 @@ contract Warper is CommonBase, StdCheats, StdUtils {
 
     LinearBondingCurve internal  _bondingCurve;
 
+    mapping(bytes32 => uint256) public calls;
 
-    constructor(address bondingCurve_) {
-        _bondingCurve    = LinearBondingCurve(bondingCurve_);
+    modifier countCall(bytes32 key) {
+        calls[key]++;
+        _;
     }
 
-    function warp(uint256 warpTime_) external {
-        vm.warp(block.timestamp + bound(warpTime_, 3 weeks, 4 weeks));
+
+    constructor(address bondingCurve_) {
+        _bondingCurve = LinearBondingCurve(bondingCurve_);
+    }
+
+    function warp(uint256 warpTime_) external countCall("warp") {
+        vm.warp(block.timestamp + bound(warpTime_, 2 weeks, 3 weeks));
+    }
+
+    function callSummary() external view {
+        console.log("-------------------");
+        console.log("warp", calls["warp"]);
     }
 
 }
