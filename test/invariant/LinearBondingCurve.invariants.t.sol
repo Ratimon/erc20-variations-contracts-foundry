@@ -18,7 +18,9 @@ import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve
 
 import { InvariantOwner }   from "./handlers/Owner.sol";
 import { InvariantBuyerManager }   from "./handlers/Buyer.sol";
+import { Warper }  from "./handlers/Warper.sol";
 
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {LinearCurve} from "@main/pricings/LinearCurve.sol";
 
 
@@ -32,6 +34,7 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
 
     InvariantOwner internal _owner;
     InvariantBuyerManager internal _buyerManager;
+    Warper internal _warper;
 
     IERC20 buyToken;
     IERC20 saleToken;
@@ -67,10 +70,9 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         vm.label(address(saleToken), "TestSaleToken");
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
-        vm.stopPrank();
-
         _owner = new InvariantOwner(address(linearBondingCurve), address(buyToken),  address(saleToken));
         _buyerManager = new InvariantBuyerManager(address(linearBondingCurve), address(buyToken),  address(saleToken));
+        _warper = new Warper(address(linearBondingCurve));
 
         vm.label(address(_owner), "Owner");
         vm.label(address(_buyerManager), "BuyerManager");
@@ -79,10 +81,26 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         // selectors[0] = Handler.__.selector;
         // targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
 
+        // Performs random allocate() calls
         targetContract(address(_owner));
+         // Performs random purchase() calls
         targetContract(address(_buyerManager));
+        // Performs random warps forward in time
+        targetContract(address(_warper));
 
         _buyerManager.createBuyer();
+
+        Ownable2Step(address(linearBondingCurve)).transferOwnership(address(_owner));
+        vm.stopPrank();
+
+        vm.startPrank(address(_owner));
+
+        Ownable2Step(address(linearBondingCurve)).acceptOwnership();
+        
+        vm.stopPrank();
+
+
+       
     }
 
     function dealERC20(address saleToken_, address deployer_, uint256 cap_ ) internal {
