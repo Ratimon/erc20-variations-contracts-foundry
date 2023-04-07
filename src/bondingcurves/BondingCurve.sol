@@ -27,7 +27,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
     IERC20 public override immutable token;
 
     /**
-     * @notice the total amount of token purchased on bonding curve
+     * @notice the total amount of sale token purchased on bonding curve
     **/
     UD60x18 public override totalPurchased;
 
@@ -38,7 +38,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
     /**
      * @notice BondingCurve constructor
-     * @param _acceptedToken ERC20 token in for this bonding curve
+     * @param _acceptedToken ERC1363 token in for this bonding curve
      * @param _token ERC20 token sale out for this bonding curve
      * @param _duration duration to sell
      * @param _cap maximum token sold for this bonding curve to ensure security
@@ -174,16 +174,16 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
     function _purchase(address operator,  address to, uint256 tokenAmountIn)
         internal
-        returns (UD60x18 balanceAmountOut)
+        returns (UD60x18 saleTokenAmountOut)
     {
-        balanceAmountOut = calculatePurchaseAmountOut(ud(tokenAmountIn));
+        saleTokenAmountOut = calculatePurchaseAmountOut(ud(tokenAmountIn));
 
-        require( gte( availableToSell(), ud(tokenAmountIn)), "BondingCurve: exceeds cap");
-        _incrementTotalPurchased(balanceAmountOut);
-        IERC20(token).safeTransfer(to,unwrap(balanceAmountOut));
+        require( gte( availableToSell(), saleTokenAmountOut), "BondingCurve: exceeds cap");
+        _incrementTotalPurchased(saleTokenAmountOut);
+        IERC20(token).safeTransfer(to,unwrap(saleTokenAmountOut));
 
-        emit Purchase(operator,to, ud(tokenAmountIn), balanceAmountOut);
-        return balanceAmountOut;
+        emit Purchase(operator,to, ud(tokenAmountIn), saleTokenAmountOut);
+        return saleTokenAmountOut;
     }
 
     function _incrementTotalPurchased(UD60x18 amount) internal {

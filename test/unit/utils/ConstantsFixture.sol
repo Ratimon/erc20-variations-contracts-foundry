@@ -13,10 +13,10 @@ contract ConstantsFixture is Test, RegisterScripts {
     uint256 public staticTime;
 
     address public deployer;
-    address public alice = address(1);
-    address public bob = address(2);
-    address public carol = address(3);
-    address public dave = address(4);
+    address public alice = address(11);
+    address public bob = address(12);
+    address public carol = address(13);
+    address public dave = address(14);
 
     function setUp() public virtual {
 

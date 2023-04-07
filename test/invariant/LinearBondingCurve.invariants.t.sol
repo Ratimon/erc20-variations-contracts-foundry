@@ -45,10 +45,6 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         vm.startPrank(deployer);
         vm.warp(staticTime );
 
-        // owner
-        // buyer
-        // warper
-
         arg_erc1363WithSanction.name = "TestBuyToken";
         arg_erc1363WithSanction.symbol = "BUY";
         arg_erc1363WithSanction.initialOwner = msg.sender;
@@ -78,9 +74,7 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         vm.label(address(_warper), "Warper");
         vm.label(address(_owner), "Owner");
        
-
         Ownable2Step(address(linearBondingCurve)).transferOwnership(address(_owner));
-
         vm.stopPrank();
 
         vm.startPrank(address(_owner));
@@ -88,8 +82,6 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         vm.stopPrank();
 
         vm.startPrank(deployer);
-       
-
         bytes4[] memory selectors = new bytes4[](1);
         selectors[0] = InvariantBuyerManager.purchase.selector;
 
@@ -107,10 +99,7 @@ contract LinearBondingCurveInvariants is StdInvariant, Test, ConstantsFixture, D
         targetSelector(FuzzSelector({addr: address(_owner), selectors: selectors}));
         targetContract(address(_owner));
 
-
         _buyerManager.createBuyer();
-
-       
         vm.stopPrank();
        
     }

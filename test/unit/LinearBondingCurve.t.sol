@@ -79,11 +79,11 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         deal({token : saleToken_, to: deployer_, give: cap_ });
     }
 
-    function test_Constructor() public {
+    function test_Constructor() external {
         assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
     }
 
-    function test_purchase_statBuyingToken() public {
+    function test_ForState_acceptedToken_purchase() external {
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
         vm.startPrank(alice);
@@ -107,7 +107,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         vm.stopPrank();
     }
 
-    function test_purchase_stateSaleToken() public {
+    function test_ForState_SaleToken_purchase() external {
 
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
@@ -149,7 +149,7 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
     }
 
 
-    function test_allocate() public {
+    function test_allocate() external {
 
         deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
 
