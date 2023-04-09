@@ -33,13 +33,15 @@ contract LinearBondingCurve is BondingCurve, LinearCurve {
 
     /**
      * @notice return current instantaneous bonding curve price
-     * @return amountOut price reported 
+     * @param tokenSupply the current amount of acceptable token purchased
+     * @return amountOut price reported
      * @dev just use only one helper function from LinearCurve
-    **/
-    function getCurrentPrice() external view override returns (UD60x18){
-        return getLinearInstantaneousPrice(totalPurchased);
+     *
+     */
+    function getCurrentPrice(UD60x18 tokenSupply) external view override returns (UD60x18) {
+        return getLinearInstantaneousPrice(tokenSupply);
     }
-
+    
     /**
      * @notice return amount of token sale received after a bonding curve purchase
      * @param tokenAmountIn the amount of underlying used to purchase

@@ -13,8 +13,6 @@ interface IBondingCurve {
 
     event Allocate( address indexed caller, UD60x18 amount);
 
-    event Reset(UD60x18 oldTotalPurchased);
-
     // ----------- State changing Api -----------
 
     function purchase(address to, uint256 amountIn)
@@ -34,7 +32,7 @@ interface IBondingCurve {
 
     // ----------- Getters -----------
 
-    function getCurrentPrice() external view returns (UD60x18);
+    function getCurrentPrice(UD60x18 tokenSupply) external view returns (UD60x18);
 
     function calculatePurchaseAmountOut(UD60x18 tokenAmountIn)
         external
