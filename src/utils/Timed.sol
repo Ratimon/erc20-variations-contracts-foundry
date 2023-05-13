@@ -2,7 +2,6 @@
 pragma solidity =0.8.19;
 
 abstract contract Timed {
-
     /// @notice the start timestamp of the timed period
     uint256 public startTime;
 
@@ -57,7 +56,7 @@ abstract contract Timed {
 
     function _initTimed() internal {
         startTime = block.timestamp;
-        
+
         emit TimerReset(block.timestamp);
     }
 

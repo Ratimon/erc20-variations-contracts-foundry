@@ -14,31 +14,32 @@ import {ERC165Checker} from "@openzeppelin/contracts/utils/introspection/ERC165C
  * @title ERC1363PayableBase
  * @dev Implementation of a contract that wants to accept ERC1363 payments.
  */
-contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
+contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165 {
     using ERC165Checker for address;
 
     /**
      * @dev Emitted when `amount` tokens are moved from one account (`sender`) to
      * this by spender (`operator`) using `transferAndCall` or `transferFromAndCall`.
-    **/
+     *
+     */
     event TokensReceived(address indexed operator, address indexed sender, uint256 amount, bytes data);
 
     /**
      * @dev Emitted when the allowance of this for a `sender` is set by
      * a call to `approveAndCall`. `amount` is the new allowance.
-    **/
+     *
+     */
     event TokensApproved(address indexed sender, uint256 amount, bytes data);
 
-    
     ///@notice The ERC1363 token accepted
-    IERC1363 private immutable  _acceptedToken;
+    IERC1363 private immutable _acceptedToken;
 
     /**
      * @notice ERC1363PayableBase constructor
      * @param acceptedToken_ Address of the token being accepted
-    **/
+     *
+     */
     constructor(IERC1363 acceptedToken_) {
-
         if (address(acceptedToken_) == address(0)) revert Errors.ZeroAddressNotAllowed();
         if (!acceptedToken_.supportsInterface(type(IERC1363).interfaceId)) revert Errors.UnsupportedInterface();
         _acceptedToken = acceptedToken_;
@@ -46,12 +47,11 @@ contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
 
     /**
      * @dev See {IERC165-supportsInterface}.
-    **/
+     *
+     */
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
-        return
-            interfaceId == type(IERC1363Receiver).interfaceId ||
-            interfaceId == type(IERC1363Spender).interfaceId ||
-            super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC1363Receiver).interfaceId || interfaceId == type(IERC1363Spender).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
     /*
@@ -61,12 +61,11 @@ contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
      * @param amount The amount of tokens transferred
      * @param data Additional data with no specified format
     **/
-    function onTransferReceived(
-        address spender,
-        address sender,
-        uint256 amount,
-        bytes memory data
-    ) public override returns (bytes4) {
+    function onTransferReceived(address spender, address sender, uint256 amount, bytes memory data)
+        public
+        override
+        returns (bytes4)
+    {
         require(msg.sender == address(_acceptedToken), "ERC1363Payable: acceptedToken is not message sender");
 
         emit TokensReceived(spender, sender, amount, data);
@@ -94,7 +93,8 @@ contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
 
     /**
      * @dev The ERC1363 token accepted
-    **/
+     *
+     */
     function acceptedToken() public view returns (IERC1363) {
         return _acceptedToken;
     }
@@ -106,7 +106,8 @@ contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
      * @param sender The address which are token transferred from
      * @param amount The amount of tokens transferred
      * @param data Additional data with no specified format
-    **/
+     *
+     */
     function _transferReceived(address spender, address sender, uint256 amount, bytes memory data) internal virtual {
         // optional override
     }
@@ -117,10 +118,9 @@ contract ERC1363PayableBase is IERC1363Receiver, IERC1363Spender, ERC165{
      * @param sender The address which called `approveAndCall` function
      * @param amount The amount of tokens to be spent
      * @param data Additional data with no specified format
-    **/
+     *
+     */
     function _approvalReceived(address sender, uint256 amount, bytes memory data) internal virtual {
         // optional override
     }
-
-
 }

@@ -9,12 +9,10 @@ import {Errors} from "@main/shared/Error.sol";
 import {GodRoles} from "@main/roles/GodRoles.sol";
 import {ERC1363WithGodmode} from "@main/ERC1363WithGodmode.sol";
 
-import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
-import {DeploymentERC1363WithGodmode}  from "@test/unit/utils/ERC1363WithGodmode.constructor.sol";
+import {ConstantsFixture} from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithGodmode} from "@test/unit/utils/ERC1363WithGodmode.constructor.sol";
 
-
-contract TestUnitERC1363WithGodmode is  ConstantsFixture, DeploymentERC1363WithGodmode {
-
+contract TestUnitERC1363WithGodmode is ConstantsFixture, DeploymentERC1363WithGodmode {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     IERC1363WithGodmode erc1363WithGodmode;
@@ -23,10 +21,10 @@ contract TestUnitERC1363WithGodmode is  ConstantsFixture, DeploymentERC1363WithG
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public  virtual override {
+    function setUp() public virtual override {
         super.setUp();
         vm.label(address(this), "TestUnitERC1363WithGodmode");
-        
+
         vm.startPrank(deployer);
 
         arg_erc1363WithGodmode.name = "Test Sanction Token";
@@ -54,19 +52,17 @@ contract TestUnitERC1363WithGodmode is  ConstantsFixture, DeploymentERC1363WithG
         uint256 amount_to_transfer = 1 ether;
         vm.startPrank(carol);
 
-        deal({token : address(erc1363WithGodmode), to: alice, give: amount_to_transfer });
-        vm.expectRevert(
-            abi.encodeWithSelector(Errors.NotAuthorized.selector, carol)
-        );
+        deal({token: address(erc1363WithGodmode), to: alice, give: amount_to_transfer});
+        vm.expectRevert(abi.encodeWithSelector(Errors.NotAuthorized.selector, carol));
         erc1363WithGodmode.transferWithGodmode(alice, bob, amount_to_transfer);
 
         vm.stopPrank();
     }
 
     function testFuzz_transferWithGodmode(uint256 amount_to_transfer) public {
-        amount_to_transfer = bound( amount_to_transfer, 0.5 ether, 200 ether);
+        amount_to_transfer = bound(amount_to_transfer, 0.5 ether, 200 ether);
 
-        deal({token : address(erc1363WithGodmode), to: alice, give: amount_to_transfer });
+        deal({token: address(erc1363WithGodmode), to: alice, give: amount_to_transfer});
 
         vm.startPrank(deployer);
 
@@ -80,11 +76,12 @@ contract TestUnitERC1363WithGodmode is  ConstantsFixture, DeploymentERC1363WithG
         uint256 alicePostBal = IERC20(address(erc1363WithGodmode)).balanceOf(alice);
         uint256 bobPostBal = IERC20(address(erc1363WithGodmode)).balanceOf(bob);
 
-        uint256 changeInAliceBal = alicePostBal > alicePreBal ? (alicePostBal - alicePreBal) : (alicePreBal - alicePostBal);
+        uint256 changeInAliceBal =
+            alicePostBal > alicePreBal ? (alicePostBal - alicePreBal) : (alicePreBal - alicePostBal);
         uint256 changeInBobBal = bobPostBal > bobPreBal ? (bobPostBal - bobPreBal) : (bobPreBal - bobPostBal);
 
-        assertEq(changeInAliceBal,amount_to_transfer);
-        assertEq(changeInBobBal,amount_to_transfer);
+        assertEq(changeInAliceBal, amount_to_transfer);
+        assertEq(changeInBobBal, amount_to_transfer);
 
         vm.stopPrank();
     }

@@ -7,24 +7,27 @@ import {Errors} from "@main/shared/Error.sol";
 /**
  * @notice Customised 2-step Ownable Contract, preventing setting wrong admin address
  * @dev more details is at https://docs.openzeppelin.com/contracts/4.x/api/access#Ownable2Step
-**/
-contract SanctionRoles is ISanctionRoles{
-
+ *
+ */
+contract SanctionRoles is ISanctionRoles {
     /**
      * @notice the address of the current owner, that is able to set new Sanction admin and minter
-    **/  
+     *
+     */
     address internal _owner;
     address internal _pendingOwner;
 
     /**
      * @notice the address which is able to ban specified addresses from sending and receiving tokens
-    **/    
+     *
+     */
     address internal _sanctionAdmin;
     address internal _pendingSanctionAdmin;
 
     /**
      * @notice the address which is able to mint tokens eg. bonding curve contracr
-    **/
+     *
+     */
     address internal _minter;
 
     /**
@@ -32,12 +35,9 @@ contract SanctionRoles is ISanctionRoles{
      * @param initialOwner initial owner
      * @param initialSanctionAdmin initial admin who is able to sanction
      * @param initialMinter initial minter
-    **/
-    constructor(
-        address initialOwner,
-        address initialSanctionAdmin,
-        address initialMinter
-    ) {
+     *
+     */
+    constructor(address initialOwner, address initialSanctionAdmin, address initialMinter) {
         if (initialOwner == address(0)) revert Errors.ZeroAddressNotAllowed();
         if (initialSanctionAdmin == address(0)) revert Errors.ZeroAddressNotAllowed();
         if (initialMinter == address(0)) revert Errors.ZeroAddressNotAllowed();
@@ -53,7 +53,8 @@ contract SanctionRoles is ISanctionRoles{
     /**
      * @notice Starts the ownership transfer of the contract to a new account. Replaces the pending transfer if there is one.
      * Can only be called by the current owner.
-    **/
+     *
+     */
     function transferOwnership(address newOwner) external {
         if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
@@ -64,7 +65,8 @@ contract SanctionRoles is ISanctionRoles{
     /**
      * @notice The new owner accepts the ownership transfer.
      * Can only be called current owner.
-    **/
+     *
+     */
     function acceptOwnership() external {
         if (_pendingOwner != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
@@ -74,13 +76,13 @@ contract SanctionRoles is ISanctionRoles{
         emit OwnershipTransferred(oldOwner, _owner);
     }
 
-
     /**
      * @notice set the new SanctionAdmin
      * Can only be called by either owner or the current sanctionAdmin admin.
-    **/
+     *
+     */
     function setSanctionAdmin(address newSanctionAdmin) external {
-        if ( (_sanctionAdmin != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
+        if ((_sanctionAdmin != msg.sender) && (_owner != msg.sender)) revert Errors.NotAuthorized(msg.sender);
 
         _pendingSanctionAdmin = newSanctionAdmin;
         emit SanctionAdminSetStarted(_sanctionAdmin, newSanctionAdmin);
@@ -89,7 +91,8 @@ contract SanctionRoles is ISanctionRoles{
     /**
      * @notice The new SanctionAdmin accepts the SanctionAdmin ownership transfer.
      * Can only be called current sanctionAdmin admin.
-    **/
+     *
+     */
     function acceptSanctionAdmin() external {
         if (_pendingSanctionAdmin != msg.sender) revert Errors.NotAuthorized(msg.sender);
 
@@ -102,9 +105,10 @@ contract SanctionRoles is ISanctionRoles{
     /**
      * @notice set the new minter
      * Can only be called by either owner or the current minter.
-    **/
+     *
+     */
     function setMinter(address newMinter) external {
-        if ( (_minter != msg.sender) && (_owner != msg.sender) ) revert Errors.NotAuthorized(msg.sender);
+        if ((_minter != msg.sender) && (_owner != msg.sender)) revert Errors.NotAuthorized(msg.sender);
 
         address oldMinter = _minter;
         _minter = newMinter;
@@ -113,37 +117,41 @@ contract SanctionRoles is ISanctionRoles{
 
     /**
      * @notice Get the owner of the contract.
-    **/
+     *
+     */
     function owner() external view override returns (address) {
         return _owner;
     }
 
     /**
      * @notice Get the pending owner of the contract.
-    **/
-    function pendingOwner() external view override returns (address){
+     *
+     */
+    function pendingOwner() external view override returns (address) {
         return _pendingOwner;
     }
-    
+
     /**
      * @notice Get the sanction admin of the contract.
-    **/
-    function sanctionAdmin() external view override returns (address){
+     *
+     */
+    function sanctionAdmin() external view override returns (address) {
         return _sanctionAdmin;
     }
 
     /**
      * @notice Get the pending sanction admin of the contract.
-    **/
-    function pendingSanctionAdmin() external view override returns (address){
+     *
+     */
+    function pendingSanctionAdmin() external view override returns (address) {
         return _pendingSanctionAdmin;
     }
 
     /**
      * @notice Get the minter of the contract.
-    **/
-    function minter() external view override returns (address){
+     *
+     */
+    function minter() external view override returns (address) {
         return _minter;
     }
-
 }

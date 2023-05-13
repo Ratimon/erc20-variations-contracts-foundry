@@ -29,7 +29,8 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param to The address to transfer to.
      * @param amount The amount to be transferred.
      * @return A boolean that indicates if the operation was successful.
-    **/
+     *
+     */
     function transferAndCall(address to, uint256 amount) public virtual override returns (bool) {
         return transferAndCall(to, amount, "");
     }
@@ -40,7 +41,8 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param amount The amount to be transferred
      * @param data Additional data with no specified format
      * @return A boolean that indicates if the operation was successful.
-    **/
+     *
+     */
     function transferAndCall(address to, uint256 amount, bytes memory data) public virtual override returns (bool) {
         transfer(to, amount);
         require(_checkOnTransferReceived(_msgSender(), to, amount, data), "ERC1363: receiver returned wrong data");
@@ -53,7 +55,8 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param to The address which you want to transfer to
      * @param amount The amount of tokens to be transferred
      * @return A boolean that indicates if the operation was successful.
-    **/
+     *
+     */
     function transferFromAndCall(address from, address to, uint256 amount) public virtual override returns (bool) {
         return transferFromAndCall(from, to, amount, "");
     }
@@ -65,13 +68,14 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param amount The amount of tokens to be transferred
      * @param data Additional data with no specified format
      * @return A boolean that indicates if the operation was successful.
-    **/
-    function transferFromAndCall(
-        address from,
-        address to,
-        uint256 amount,
-        bytes memory data
-    ) public virtual override returns (bool) {
+     *
+     */
+    function transferFromAndCall(address from, address to, uint256 amount, bytes memory data)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         transferFrom(from, to, amount);
         require(_checkOnTransferReceived(from, to, amount, data), "ERC1363: receiver returned wrong data");
         return true;
@@ -82,7 +86,8 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param spender The address allowed to transfer to
      * @param amount The amount allowed to be transferred
      * @return A boolean that indicates if the operation was successful.
-    **/
+     *
+     */
     function approveAndCall(address spender, uint256 amount) public virtual override returns (bool) {
         return approveAndCall(spender, amount, "");
     }
@@ -93,8 +98,14 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param amount The amount allowed to be transferred.
      * @param data Additional data with no specified format.
      * @return A boolean that indicates if the operation was successful.
-    **/
-    function approveAndCall(address spender, uint256 amount, bytes memory data) public virtual override returns (bool) {
+     *
+     */
+    function approveAndCall(address spender, uint256 amount, bytes memory data)
+        public
+        virtual
+        override
+        returns (bool)
+    {
         approve(spender, amount);
         require(_checkOnApprovalReceived(spender, amount, data), "ERC1363: spender returned wrong data");
         return true;
@@ -108,13 +119,13 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param amount uint256 The amount mount of tokens to be transferred
      * @param data bytes Optional data to send along with the call
      * @return whether the call correctly returned the expected magic value
-    **/
-    function _checkOnTransferReceived(
-        address sender,
-        address recipient,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual returns (bool) {
+     *
+     */
+    function _checkOnTransferReceived(address sender, address recipient, uint256 amount, bytes memory data)
+        internal
+        virtual
+        returns (bool)
+    {
         if (!recipient.isContract()) {
             revert("ERC1363: transfer to non contract address");
         }
@@ -140,12 +151,13 @@ abstract contract ERC1363Base is IERC1363, ERC20, ERC165 {
      * @param amount uint256 The amount of tokens to be spent
      * @param data bytes Optional data to send along with the call
      * @return whether the call correctly returned the expected magic value
-    **/
-    function _checkOnApprovalReceived(
-        address spender,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual returns (bool) {
+     *
+     */
+    function _checkOnApprovalReceived(address spender, uint256 amount, bytes memory data)
+        internal
+        virtual
+        returns (bool)
+    {
         if (!spender.isContract()) {
             revert("ERC1363: approve a non contract address");
         }

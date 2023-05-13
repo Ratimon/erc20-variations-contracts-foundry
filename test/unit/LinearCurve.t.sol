@@ -4,14 +4,13 @@ pragma solidity =0.8.19;
 import {Test} from "@forge-std/Test.sol";
 import {StdUtils} from "@forge-std/StdUtils.sol";
 
-import { powu } from "@prb-math/ud60x18/Math.sol";
-import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
+import {powu} from "@prb-math/ud60x18/Math.sol";
+import {UD60x18, ud, unwrap} from "@prb-math/UD60x18.sol";
 
 import {MockLinearCurve} from "@main/mocks/MockLinearCurve.sol";
-import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
+import {ConstantsFixture} from "@test/unit/utils/ConstantsFixture.sol";
 
 contract TestUnitLinearCurve is ConstantsFixture {
-
     uint256 immutable SLOPE = 1.5e18;
     uint256 immutable INTITIAL_PRICE = 30e18;
 
@@ -21,7 +20,7 @@ contract TestUnitLinearCurve is ConstantsFixture {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public  virtual override {
+    function setUp() public virtual override {
         super.setUp();
         vm.label(address(this), "TestUnitLinearCurve");
 
@@ -31,7 +30,6 @@ contract TestUnitLinearCurve is ConstantsFixture {
         vm.label(address(linearCurveContract), "linearCurveContract");
 
         vm.stopPrank();
-
     }
 
     function test_getInstantaneousPrice() external {
@@ -44,7 +42,7 @@ contract TestUnitLinearCurve is ConstantsFixture {
     }
 
     function testFuzz_getInstantaneousPrice(uint256 tokenSupply) external {
-        tokenSupply = bound( tokenSupply, 0.5e18, 200e18);
+        tokenSupply = bound(tokenSupply, 0.5e18, 200e18);
         UD60x18 tokenAmountIn = ud(tokenSupply);
 
         UD60x18 actualPrice = linearCurveContract.getLinearInstantaneousPrice(tokenAmountIn);
@@ -64,11 +62,12 @@ contract TestUnitLinearCurve is ConstantsFixture {
     }
 
     function testFuzz_getPoolBalance(uint256 tokenSupply) external {
-        tokenSupply = bound( tokenSupply, 0.5e18, 200e18);
+        tokenSupply = bound(tokenSupply, 0.5e18, 200e18);
         UD60x18 tokenAmountIn = ud(tokenSupply);
 
         UD60x18 actualBalance = linearCurveContract.getPoolBalance(tokenAmountIn);
-        UD60x18 expectedBalance = ud(SLOPE).mul(powu(tokenAmountIn,2)).div(ud(2e18)).add(tokenAmountIn.mul(ud(INTITIAL_PRICE)));
+        UD60x18 expectedBalance =
+            ud(SLOPE).mul(powu(tokenAmountIn, 2)).div(ud(2e18)).add(tokenAmountIn.mul(ud(INTITIAL_PRICE)));
 
         assertEq(unwrap(actualBalance), unwrap(expectedBalance));
     }
@@ -82,8 +81,7 @@ contract TestUnitLinearCurve is ConstantsFixture {
         // 1.5/2*(20^2) + 30*(20) = 900
         // f-1(y) = (-b + sqrt(b^2 + 2my)) / m
         // f-1(900) = (-30 + sqrt(30^2 + 2(1.5)*900)) / 1.5 = 20
-         
+
         assertEq(unwrap(actualTokenAmount), unwrap(expectedTokenAmount));
     }
-
 }

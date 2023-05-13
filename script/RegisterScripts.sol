@@ -4,7 +4,6 @@ pragma solidity =0.8.19;
 import {Script, console} from "@forge-std/Script.sol";
 import {EnumerableSet, Uint256Set} from "./lib/EnumerableSet.sol";
 
-
 /// @title Foundry Register Scripts
 /// @notice Scripts for setting up and keeping track of deployments
 contract RegisterScripts is Script {
@@ -38,8 +37,8 @@ contract RegisterScripts is Script {
     mapping(uint256 => bool) __savedDeploymentsLoaded;
     mapping(uint256 => string) __savedDeploymentsJson;
 
-    string[] __decodedKeys ;
-    address payable[] __decodedAddressed ;
+    string[] __decodedKeys;
+    address payable[] __decodedAddressed;
 
     constructor() {
         setUpScripts(); // allows for environment variables to be set before initial load
@@ -71,12 +70,11 @@ contract RegisterScripts is Script {
     /// @param constructorArgs abi-encoded constructor arguments
     /// @param key unique identifier to be used in logs
     /// @return deployment deployed or loaded contract deployment
-    function setUpContract(
-        string memory contractName,
-        bytes memory constructorArgs,
-        string memory key,
-        bool attachOnly
-    ) internal virtual returns (address deployment) {
+    function setUpContract(string memory contractName, bytes memory constructorArgs, string memory key, bool attachOnly)
+        internal
+        virtual
+        returns (address deployment)
+    {
         string memory keyOrContractName = bytes(key).length == 0 ? contractName : key;
         bytes memory creationCode = abi.encodePacked(getContractCode(contractName), constructorArgs);
 
@@ -94,12 +92,14 @@ contract RegisterScripts is Script {
         bool deployNew = SCRIPTS_RESET;
 
         if (!deployNew) {
-             deployment = loadSavedDeployedAddress(keyOrContractName);
+            deployment = loadSavedDeployedAddress(keyOrContractName);
 
             if (deployment != address(0)) {
                 if (deployment.code.length == 0) {
                     console.log("Stored %s does not contain code.", contractLabel(contractName, deployment, key));
-                    console.log("Make sure '%s' contains all the latest deployments.", getDeploymentsPath("deploy-latest.json")); // prettier-ignore
+                    console.log(
+                        "Make sure '%s' contains all the latest deployments.", getDeploymentsPath("deploy-latest.json")
+                    ); // prettier-ignore
 
                     throwError("Invalid contract address.");
                 }
@@ -134,11 +134,11 @@ contract RegisterScripts is Script {
 
     /* ------------- overloads ------------- */
 
-    function setUpContract(
-        string memory contractName,
-        bytes memory constructorArgs,
-        string memory key
-    ) internal virtual returns (address) {
+    function setUpContract(string memory contractName, bytes memory constructorArgs, string memory key)
+        internal
+        virtual
+        returns (address)
+    {
         return setUpContract(contractName, constructorArgs, key, false);
     }
 
@@ -153,7 +153,6 @@ contract RegisterScripts is Script {
     {
         return setUpContract(contractName, constructorArgs, "", false);
     }
-    
 
     /* ------------- snippets ------------- */
 
@@ -165,24 +164,20 @@ contract RegisterScripts is Script {
             SCRIPTS_DRY_RUN = tryLoadEnvBool(SCRIPTS_DRY_RUN, "SCRIPTS_DRY_RUN", "US_DRY_RUN");
             SCRIPTS_CONFIRM = tryLoadEnvBool(SCRIPTS_CONFIRM, "SCRIPTS_CONFIRM", "US_CONFIRM");
             SCRIPTS_ATTACH_ONLY = tryLoadEnvBool(SCRIPTS_ATTACH_ONLY, "SCRIPTS_ATTACH_ONLY", "US_ATTACH_ONLY"); // prettier-ignore
-            SCRIPTS_MOCK_ADDRESS = tryLoadEnvBool(SCRIPTS_MOCK_ADDRESS, "SCRIPTS_MOCK_ADDRESS", "US_MOCK_ADDRESS"); 
+            SCRIPTS_MOCK_ADDRESS = tryLoadEnvBool(SCRIPTS_MOCK_ADDRESS, "SCRIPTS_MOCK_ADDRESS", "US_MOCK_ADDRESS");
 
             if (
-                SCRIPTS_RESET ||
-                SCRIPTS_BYPASS ||
-                SCRIPTS_DRY_RUN ||
-                SCRIPTS_ATTACH_ONLY ||
-                SCRIPTS_CONFIRM ||
-                SCRIPTS_MOCK_ADDRESS
+                SCRIPTS_RESET || SCRIPTS_BYPASS || SCRIPTS_DRY_RUN || SCRIPTS_ATTACH_ONLY || SCRIPTS_CONFIRM
+                    || SCRIPTS_MOCK_ADDRESS
             ) console.log("");
         }
     }
 
-    function tryLoadEnvBool(
-        bool defaultVal,
-        string memory varName,
-        string memory varAlias
-    ) internal virtual returns (bool val) {
+    function tryLoadEnvBool(bool defaultVal, string memory varName, string memory varAlias)
+        internal
+        virtual
+        returns (bool val)
+    {
         val = defaultVal;
 
         if (!val) {
@@ -200,18 +195,15 @@ contract RegisterScripts is Script {
 
     function startBroadcastIfNotDryRun() internal {
         if (!SCRIPTS_DRY_RUN) {
-
             if (SCRIPTS_CONFIRM) {
-
                 // -trezor --sender <wallet address>
                 vm.startBroadcast();
-
             } else {
                 // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
                 // string memory mnemonic = vm.envString("MNEMONIC");
 
                 // address is already funded with ETH
-                string memory mnemonic ="test test test test test test test test test test test junk";
+                string memory mnemonic = "test test test test test test test test test test test junk";
                 uint256 deployerPrivateKey = vm.deriveKey(mnemonic, "m/44'/60'/0'/0/", 0);
                 vm.startBroadcast(deployerPrivateKey);
             }
@@ -223,7 +215,6 @@ contract RegisterScripts is Script {
             vm.startPrank(tx.origin);
         }
     }
-
 
     function loadSavedDeployedAddress(string memory key) internal virtual returns (address) {
         return loadSavedDeployedAddress(key, block.chainid);
@@ -245,7 +236,6 @@ contract RegisterScripts is Script {
 
         return address(0);
     }
-
 
     function saveCreationCodeHash(address addr, bytes32 creationCodeHash) internal virtual {
         if (SCRIPTS_DRY_RUN) return;
@@ -292,7 +282,6 @@ contract RegisterScripts is Script {
         }
     }
 
-
     function deployCodeWrapper(bytes memory code) internal virtual returns (address addr) {
         addr = deployCode(code);
 
@@ -301,7 +290,6 @@ contract RegisterScripts is Script {
         require(addr.code.length != 0, "Failed to deploy code.");
     }
 
-   
     /* ------------- utils ------------- */
 
     function deployCode(bytes memory code) internal virtual returns (address addr) {
@@ -325,7 +313,6 @@ contract RegisterScripts is Script {
 
         return false;
     }
-
 
     function isFFIEnabled() internal virtual returns (bool) {
         string[] memory script = new string[](1);
@@ -356,7 +343,11 @@ contract RegisterScripts is Script {
         if (bytes(message).length != 0) console.log("\nError: %s", message);
 
         // Must revert if not dry run to cancel broadcasting transactions.
-        if (!SCRIPTS_DRY_RUN) revert(string.concat(message, '\nEnable dry-run (`SCRIPTS_DRY_RUN=true`) if the error message did not show.')); // prettier-ignore
+        if (!SCRIPTS_DRY_RUN) {
+            revert(
+                string.concat(message, "\nEnable dry-run (`SCRIPTS_DRY_RUN=true`) if the error message did not show.")
+            );
+        } // prettier-ignore
 
         // Sometimes Forge does not display the complete message then..
         // That's why we return instead.
@@ -367,11 +358,7 @@ contract RegisterScripts is Script {
 
     /* ------------- contract registry ------------- */
 
-    function registerContract(
-        string memory key,
-        string memory name,
-        address addr
-    ) internal virtual {
+    function registerContract(string memory key, string memory name, address addr) internal virtual {
         uint256 chainId = block.chainid;
 
         if (registeredContractAddress[chainId][key] != address(0)) {
@@ -398,9 +385,13 @@ contract RegisterScripts is Script {
     }
 
     function getDeploymentsPath(string memory path, uint256 chainId) internal virtual returns (string memory) {
-        return string.concat( !SCRIPTS_DRY_RUN && SCRIPTS_CONFIRM ? "deployments/production/": "deployments/test/", vm.toString(chainId), "/", path);
+        return string.concat(
+            !SCRIPTS_DRY_RUN && SCRIPTS_CONFIRM ? "deployments/production/" : "deployments/test/",
+            vm.toString(chainId),
+            "/",
+            path
+        );
     }
-
 
     function getCreationCodeHashFilePath(address addr) internal virtual returns (string memory) {
         return getDeploymentsPath(string.concat("data/", vm.toString(addr), ".creation-code-hash"));
@@ -440,14 +431,11 @@ contract RegisterScripts is Script {
     }
 
     function generateSavedContractJson(uint256 chainId) internal virtual returns (string memory json) {
-
         if (registeredContracts[chainId].length == 0) return "";
         json = "{\n";
 
         try vm.readFile(getDeploymentsPath("raw-register.json", chainId)) returns (string memory deployments) {
-
             if (bytes(deployments).length != 0) {
-
                 bytes memory keys = vm.parseJson(deployments, ".keys");
                 __decodedKeys = abi.decode(keys, (string[]));
 
@@ -459,49 +447,31 @@ contract RegisterScripts is Script {
                 address[] memory decodedExistingAddresses = abi.decode(addresses, (address[]));
 
                 for (uint256 i; i < decodedExistingAddresses.length; i++) {
-                    __decodedAddressed.push(payable(decodedExistingAddresses[i] ));
+                    __decodedAddressed.push(payable(decodedExistingAddresses[i]));
                 }
 
                 for (uint256 i; i < registeredContracts[chainId].length; i++) {
-                    __decodedAddressed.push(payable(registeredContracts[chainId][i].addr ));
+                    __decodedAddressed.push(payable(registeredContracts[chainId][i].addr));
                 }
 
-                json = string.concat(
-                        json,
-                        '  "keys": ['
-                );
+                json = string.concat(json, '  "keys": [');
 
                 for (uint256 i; i < __decodedKeys.length; i++) {
-                    json = string.concat(
-                        json,
-                        '  "',
-                        __decodedKeys[i],
-                        i + 1 == __decodedKeys.length ? '"],\n' : '",'
-                    );
+                    json = string.concat(json, '  "', __decodedKeys[i], i + 1 == __decodedKeys.length ? '"],\n' : '",');
                 }
 
-                json = string.concat(
-                        json,
-                         '  "addresses": ["'
-                );
+                json = string.concat(json, '  "addresses": ["');
 
                 for (uint256 i; i < __decodedAddressed.length; i++) {
                     json = string.concat(
-                        json,
-                        vm.toString(__decodedAddressed[i]),
-                        i + 1 == __decodedAddressed.length ? '"]\n' : '", "'
+                        json, vm.toString(__decodedAddressed[i]), i + 1 == __decodedAddressed.length ? '"]\n' : '", "'
                     );
                 }
                 json = string.concat(json, "}");
                 return json;
             }
-
         } catch {
-
-            json = string.concat(
-                    json,
-                    '  "keys": ['
-            );
+            json = string.concat(json, '  "keys": [');
 
             for (uint256 i; i < registeredContracts[chainId].length; i++) {
                 json = string.concat(
@@ -512,11 +482,7 @@ contract RegisterScripts is Script {
                 );
             }
 
-            json = string.concat(
-                    json,
-                    '  "addresses": ["'
-            );
-                  
+            json = string.concat(json, '  "addresses": ["');
 
             for (uint256 i; i < registeredContracts[chainId].length; i++) {
                 json = string.concat(
@@ -531,14 +497,11 @@ contract RegisterScripts is Script {
     }
 
     function generateFormatedContractJson(uint256 chainId) internal virtual returns (string memory json) {
-
         if (registeredContracts[chainId].length == 0) return "";
         json = "{\n";
 
         try vm.readFile(getDeploymentsPath("raw-register.json", chainId)) returns (string memory deployments) {
-
             if (bytes(deployments).length != 0) {
-
                 bytes memory keys = vm.parseJson(deployments, ".keys");
                 string[] memory decodedKeys = abi.decode(keys, (string[]));
 
@@ -555,20 +518,16 @@ contract RegisterScripts is Script {
                         i + 1 == decodedKeys.length ? '"\n' : '",\n'
                     );
                 }
-
             }
-
         } catch {}
 
         return json = string.concat(json, "}");
     }
 
-
-function storeLatestDeployments() internal virtual {
+    function storeLatestDeployments() internal virtual {
         logDeployments();
 
         if (!SCRIPTS_DRY_RUN) {
-
             for (uint256 i; i < registeredChainIds.length(); i++) {
                 uint256 chainId = registeredChainIds.at(i);
 
@@ -580,18 +539,19 @@ function storeLatestDeployments() internal virtual {
                     mkdir(getDeploymentsPath("", chainId));
 
                     vm.writeFile(getDeploymentsPath(string.concat("deploy-latest.json"), chainId), json);
-                    vm.writeFile(getDeploymentsPath(string.concat("deploy-", vm.toString(block.timestamp), ".json"), chainId), json); // prettier-ignore
+                    vm.writeFile(
+                        getDeploymentsPath(string.concat("deploy-", vm.toString(block.timestamp), ".json"), chainId),
+                        json
+                    ); // prettier-ignore
 
                     console.log("Deployments saved to %s.", getDeploymentsPath("deploy-latest.json", chainId)); // prettier-ignore
-                }                
+                }
             }
-
         }
     }
 
     function savePastDeployments() internal virtual {
         if (!SCRIPTS_DRY_RUN) {
-
             for (uint256 i; i < registeredChainIds.length(); i++) {
                 uint256 chainId = registeredChainIds.at(i);
 
@@ -608,7 +568,6 @@ function storeLatestDeployments() internal virtual {
 
     function formatRegister() internal {
         if (!SCRIPTS_DRY_RUN) {
-
             for (uint256 i; i < registeredChainIds.length(); i++) {
                 uint256 chainId = registeredChainIds.at(i);
 
@@ -651,17 +610,15 @@ function storeLatestDeployments() internal virtual {
         console.log("%s:\n", name);
     }
 
-    function contractLabel(
-        string memory contractName,
-        address addr,
-        string memory key
-    ) internal virtual returns (string memory) {
-        return
-            string.concat(
-                contractName,
-                addr == address(0) ? "" : string.concat("(", vm.toString(addr), ")"),
-                bytes(key).length == 0 ? "" : string.concat(" [", key, "]")
-            );
+    function contractLabel(string memory contractName, address addr, string memory key)
+        internal
+        virtual
+        returns (string memory)
+    {
+        return string.concat(
+            contractName,
+            addr == address(0) ? "" : string.concat("(", vm.toString(addr), ")"),
+            bytes(key).length == 0 ? "" : string.concat(" [", key, "]")
+        );
     }
-
 }

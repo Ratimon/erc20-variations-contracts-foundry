@@ -11,17 +11,16 @@ import {BondingCurve} from "@main/bondingcurves/BondingCurve.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
-import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
-import {UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
+import {MockERC20} from "@solmate/test/utils/mocks/MockERC20.sol";
+import {UD60x18, ud, unwrap} from "@prb-math/UD60x18.sol";
 
-import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
-import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
-import {DeploymentLinearBondingCurve}  from "@test/unit/utils/LinearBondingCurve.constructor.sol";
+import {ConstantsFixture} from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithSanction} from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
+import {DeploymentLinearBondingCurve} from "@test/unit/utils/LinearBondingCurve.constructor.sol";
 
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSanction, DeploymentLinearBondingCurve {
-
     IERC1363WithSanction erc1363WithSanction;
     IBondingCurve linearBondingCurve;
 
@@ -32,12 +31,12 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public  virtual override {
+    function setUp() public virtual override {
         super.setUp();
         vm.label(address(this), "TestUnitLinearBondingCurve");
 
         vm.startPrank(deployer);
-        vm.warp(staticTime );
+        vm.warp(staticTime);
 
         arg_erc1363WithSanction.name = "Test Sanction Token";
         arg_erc1363WithSanction.symbol = "SANC";
@@ -45,11 +44,12 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
         arg_erc1363WithSanction.initialMinter = msg.sender;
 
-        erc1363WithSanction = IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup( arg_erc1363WithSanction ));
+        erc1363WithSanction =
+            IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup(arg_erc1363WithSanction));
 
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
-        saleToken = IERC20(address( new MockERC20("TestSaleToken", "TT0", 18)));
+        saleToken = IERC20(address(new MockERC20("TestSaleToken", "TT0", 18)));
         vm.label(address(saleToken), "TestSaleToken");
 
         arg_linearBondingCurve.acceptedToken = IERC1363(address(erc1363WithSanction));
@@ -58,13 +58,15 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         arg_linearBondingCurve._cap = 1_000_000e18;
         arg_linearBondingCurve._slope = 1.5e18;
         arg_linearBondingCurve._initialPrice = 30e18;
-        
-        linearBondingCurve = IBondingCurve(DeploymentLinearBondingCurve.deployAndSetup(saleToken,  deployer, arg_linearBondingCurve, dealERC20 ));
+
+        linearBondingCurve = IBondingCurve(
+            DeploymentLinearBondingCurve.deployAndSetup(saleToken, deployer, arg_linearBondingCurve, dealERC20)
+        );
 
         vm.label(address(linearBondingCurve), "linearBondingCurve");
 
         // Ownable2Step(address(linearBondingCurve)).acceptOwnership();
-        
+
         vm.stopPrank();
     }
 
@@ -75,16 +77,16 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
     //     vm.assume(amount0 > 0);
     // }
 
-    function dealERC20(address saleToken_, address deployer_, uint256 cap_ ) internal {
-        deal({token : saleToken_, to: deployer_, give: cap_ });
+    function dealERC20(address saleToken_, address deployer_, uint256 cap_) internal {
+        deal({token: saleToken_, to: deployer_, give: cap_});
     }
 
     function test_Constructor() external {
-        assertEq( unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)) );
+        assertEq(unwrap(linearBondingCurve.cap()), IERC20(saleToken).balanceOf(address(linearBondingCurve)));
     }
 
     function test_ForState_acceptedToken_purchase() external {
-        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+        deal({token: address(erc1363WithSanction), to: alice, give: 20e18});
 
         vm.startPrank(alice);
 
@@ -94,22 +96,23 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
         uint256 purchase_amount = 7e18;
 
-        linearBondingCurve.purchase( alice, purchase_amount);
+        linearBondingCurve.purchase(alice, purchase_amount);
 
         uint256 alicePostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
         UD60x18 postReserveBalance = linearBondingCurve.reserveBalance();
-        uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken ? (alicePostBalBuyingToken - alicePreBalBuyingToken) : (alicePreBalBuyingToken - alicePostBalBuyingToken);
+        uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken
+            ? (alicePostBalBuyingToken - alicePreBalBuyingToken)
+            : (alicePreBalBuyingToken - alicePostBalBuyingToken);
 
-        assertEq(alicePostBalBuyingToken, 13e18 );
-        assertEq(changeInAliceBalBuyingToken, purchase_amount );
-        assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), purchase_amount );
+        assertEq(alicePostBalBuyingToken, 13e18);
+        assertEq(changeInAliceBalBuyingToken, purchase_amount);
+        assertEq(unwrap(postReserveBalance.sub(preReserveBalance)), purchase_amount);
 
         vm.stopPrank();
     }
 
     function test_ForState_SaleToken_purchase() external {
-
-        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+        deal({token: address(erc1363WithSanction), to: alice, give: 20e18});
 
         vm.startPrank(alice);
 
@@ -119,28 +122,27 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
 
         IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
         uint256 purchase_amount = 7e18;
-        UD60x18 amountOut = linearBondingCurve.purchase( alice, purchase_amount);
+        UD60x18 amountOut = linearBondingCurve.purchase(alice, purchase_amount);
         // 1.5/2*(7^2) + 30*(7) = 246.75
 
         uint256 alicePostBalSaleToken = IERC20(address(saleToken)).balanceOf(alice);
         UD60x18 postTotalPurchased = linearBondingCurve.totalPurchased();
         UD60x18 postAvailableToSell = linearBondingCurve.availableToSell();
 
-        LinearCurve linearCurve =  LinearCurve(address(linearBondingCurve));
-        
+        LinearCurve linearCurve = LinearCurve(address(linearBondingCurve));
+
         UD60x18 postSaleTokenSupply = preTotalPurchased.add(ud(purchase_amount));
         UD60x18 firstIntegral = linearCurve.getPoolBalance(postSaleTokenSupply);
         UD60x18 secondIntegral = linearCurve.getPoolBalance(preTotalPurchased);
         UD60x18 changeInSaleToken = firstIntegral.sub(secondIntegral);
 
-        assertEq(alicePostBalSaleToken, 246.75e18 );
-        assertEq(alicePostBalSaleToken - alicePreBalSaleToken, unwrap(changeInSaleToken) );
+        assertEq(alicePostBalSaleToken, 246.75e18);
+        assertEq(alicePostBalSaleToken - alicePreBalSaleToken, unwrap(changeInSaleToken));
 
-        assertEq(unwrap(postTotalPurchased), 246.75e18 );
-        assertEq(unwrap(postTotalPurchased), unwrap(amountOut) );
-        assertEq(unwrap(postTotalPurchased.sub(preTotalPurchased)),unwrap(changeInSaleToken) );
+        assertEq(unwrap(postTotalPurchased), 246.75e18);
+        assertEq(unwrap(postTotalPurchased), unwrap(amountOut));
+        assertEq(unwrap(postTotalPurchased.sub(preTotalPurchased)), unwrap(changeInSaleToken));
         assertEq(unwrap(postAvailableToSell), unwrap(preAvailableToSell.sub(changeInSaleToken)));
-
 
         // UD60x18 buyTokenSupply = ud( IERC20(address(erc1363WithSanction)).balanceOf(address(linearBondingCurve)) );
         // assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
@@ -148,41 +150,38 @@ contract TestUnitLinearBondingCurve is ConstantsFixture, DeploymentERC1363WithSa
         vm.stopPrank();
     }
 
-
     function test_allocate() external {
-
-        deal({token : address(erc1363WithSanction), to: alice, give: 20e18 });
+        deal({token: address(erc1363WithSanction), to: alice, give: 20e18});
 
         vm.startPrank(alice);
-        vm.warp(staticTime + 1 days );
-
+        vm.warp(staticTime + 1 days);
 
         IERC20(address(erc1363WithSanction)).approve(address(linearBondingCurve), maxUint256);
         uint256 purchase_amount = 7e18;
 
-        linearBondingCurve.purchase( alice, purchase_amount);
+        linearBondingCurve.purchase(alice, purchase_amount);
 
         vm.stopPrank();
 
         vm.startPrank(deployer);
-        vm.warp(staticTime + 3 weeks );
+        vm.warp(staticTime + 3 weeks);
 
         uint256 deployerPreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(deployer);
         uint256 allocate_amount = 5e18;
 
-        linearBondingCurve.allocate( allocate_amount, deployer);
+        linearBondingCurve.allocate(allocate_amount, deployer);
 
         uint256 deployerPostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(deployer);
-        uint256 changeInDeployerBalBuyingToken = deployerPostBalBuyingToken > deployerPreBalBuyingToken ? (deployerPostBalBuyingToken - deployerPreBalBuyingToken) : (deployerPreBalBuyingToken - deployerPostBalBuyingToken);
+        uint256 changeInDeployerBalBuyingToken = deployerPostBalBuyingToken > deployerPreBalBuyingToken
+            ? (deployerPostBalBuyingToken - deployerPreBalBuyingToken)
+            : (deployerPreBalBuyingToken - deployerPostBalBuyingToken);
 
-        assertEq(deployerPostBalBuyingToken, 5e18 );
-        assertEq(changeInDeployerBalBuyingToken, allocate_amount );
+        assertEq(deployerPostBalBuyingToken, 5e18);
+        assertEq(changeInDeployerBalBuyingToken, allocate_amount);
 
         // UD60x18 buyTokenSupply = ud( IERC20(address(erc1363WithSanction)).balanceOf(address(linearBondingCurve)) );
         // assertEq( unwrap( LinearCurve( address(linearBondingCurve)).getPoolBalance( buyTokenSupply ) ), unwrap(linearBondingCurve.totalPurchased() ));
 
         vm.stopPrank();
     }
-
-
 }

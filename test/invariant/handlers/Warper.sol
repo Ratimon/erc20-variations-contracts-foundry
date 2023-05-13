@@ -6,13 +6,11 @@ import {StdCheats} from "@forge-std/StdCheats.sol";
 import {StdUtils} from "@forge-std/StdUtils.sol";
 import {console} from "@forge-std/console.sol";
 
-import {MockERC20} from  "@solmate/test/utils/mocks/MockERC20.sol";
+import {MockERC20} from "@solmate/test/utils/mocks/MockERC20.sol";
 import {LinearBondingCurve} from "@main/LinearBondingCurve.sol";
 
-
 contract Warper is CommonBase, StdCheats, StdUtils {
-
-    LinearBondingCurve internal  _bondingCurve;
+    LinearBondingCurve internal _bondingCurve;
 
     mapping(bytes32 => uint256) public calls;
 
@@ -20,7 +18,6 @@ contract Warper is CommonBase, StdCheats, StdUtils {
         calls[key]++;
         _;
     }
-
 
     constructor(address bondingCurve_) {
         _bondingCurve = LinearBondingCurve(bondingCurve_);
@@ -34,5 +31,4 @@ contract Warper is CommonBase, StdCheats, StdUtils {
         console.log("-------------------");
         console.log("warp", calls["warp"]);
     }
-
 }

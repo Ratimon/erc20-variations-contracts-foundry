@@ -11,7 +11,7 @@ contract Constants {
     // string public constant MOCK = "MOCK";
     // string public constant NETWORK = "NETWORK";
 
-    mapping (string => mapping (string => address)) public addresses;
+    mapping(string => mapping(string => address)) public addresses;
 
     constructor() {
         // addresses[MOCK][TIMELOCK] = ;

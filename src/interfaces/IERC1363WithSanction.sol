@@ -2,7 +2,6 @@
 pragma solidity =0.8.19;
 
 interface IERC1363WithSanction {
-
     // ----------- Events -----------
 
     event BlackListAdded(address indexed blacklist);
@@ -14,11 +13,10 @@ interface IERC1363WithSanction {
 
     // ----------- Governor only state changing api -----------
 
-    function addToBlackList(address _blacklist) external ;
+    function addToBlackList(address _blacklist) external;
     function removeFromBlacklist(address _blacklist) external;
 
     // ----------- Getters -----------
-    
-    function isBlacklist(address blacklist) external returns (bool);
 
+    function isBlacklist(address blacklist) external returns (bool);
 }

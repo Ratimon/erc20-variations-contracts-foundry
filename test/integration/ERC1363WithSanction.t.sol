@@ -10,7 +10,6 @@ import {TestUnitERC1363WithSanction} from "@test/unit/ERC1363WithSanction.t.sol"
  * @notice run `make fork-node` then `make void-deploy-sanction` before run testing command
  */
 contract TestDeployScriptERC1363WithSanction is TestUnitERC1363WithSanction {
-
     function setUpScripts() internal virtual override {
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
@@ -23,11 +22,9 @@ contract TestDeployScriptERC1363WithSanction is TestUnitERC1363WithSanction {
 
         vm.label(alice, "Alice");
         vm.label(bob, "Bob");
-        
 
         deal(alice, 1 ether);
         deal(bob, 1 ether);
-        erc1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress('ERC1363WithSanction'));
+        erc1363WithSanction = IERC1363WithSanction(loadSavedDeployedAddress("ERC1363WithSanction"));
     }
-
 }

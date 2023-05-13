@@ -9,14 +9,13 @@ import {ISanctionRoles} from "@main/interfaces/ISanctionRoles.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 import {TokenSale} from "@main/TokenSale.sol";
 
-import {UD60x18,ud, unwrap } from "@prb-math/UD60x18.sol";
+import {UD60x18, ud, unwrap} from "@prb-math/UD60x18.sol";
 
-import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
-import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
-import {DeploymentTokenSale}  from "@test/unit/utils/TokenSale.constructor.sol";
+import {ConstantsFixture} from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithSanction} from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
+import {DeploymentTokenSale} from "@test/unit/utils/TokenSale.constructor.sol";
 
-contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, DeploymentTokenSale{
-
+contract TestUnitTokenSale is ConstantsFixture, DeploymentERC1363WithSanction, DeploymentTokenSale {
     IERC1363WithSanction erc1363WithSanction;
     TokenSale tokenSaleContract;
 
@@ -25,7 +24,7 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
     }
 
     function setUp() public virtual override {
-         super.setUp();
+        super.setUp();
         vm.label(address(this), "TestUnitTokenSale");
 
         vm.startPrank(deployer);
@@ -46,7 +45,7 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
         arg_tokenSale.token = IERC20(address(erc1363WithSanction));
-        arg_tokenSale._cap =  1_000e18;
+        arg_tokenSale._cap = 1_000e18;
         arg_tokenSale._price = 20e18;
 
         tokenSaleContract = new TokenSale(
@@ -54,11 +53,11 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
             arg_tokenSale._cap,
             arg_tokenSale._price
         );
-            
+
         vm.label(address(tokenSaleContract), "tokenSaleContract");
 
-        IERC20Mintable(address(erc1363WithSanction)).mint(deployer,arg_tokenSale._cap );
-        IERC20(address(erc1363WithSanction)).approve(address(tokenSaleContract),maxUint256);
+        IERC20Mintable(address(erc1363WithSanction)).mint(deployer, arg_tokenSale._cap);
+        IERC20(address(erc1363WithSanction)).approve(address(tokenSaleContract), maxUint256);
         ISanctionRoles(address(erc1363WithSanction)).setMinter(address(tokenSaleContract));
 
         tokenSaleContract.init();
@@ -67,7 +66,9 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
     }
 
     function test_Constructor() public {
-        assertEq( unwrap(tokenSaleContract.cap()), IERC20(address(erc1363WithSanction)).balanceOf(address(tokenSaleContract)) );
+        assertEq(
+            unwrap(tokenSaleContract.cap()), IERC20(address(erc1363WithSanction)).balanceOf(address(tokenSaleContract))
+        );
     }
 
     function test_buy() public {
@@ -78,8 +79,8 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
         uint256 alicePreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
         uint256 contractPreBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(address(tokenSaleContract));
 
-        assertEq(alicePreBalBuyingToken, 0e18 );
-        assertEq(contractPreBalBuyingToken, 1000e18 );
+        assertEq(alicePreBalBuyingToken, 0e18);
+        assertEq(contractPreBalBuyingToken, 1000e18);
 
         uint256 buy_amount = 10e18;
 
@@ -90,19 +91,19 @@ contract TestUnitTokenSale is  ConstantsFixture, DeploymentERC1363WithSanction, 
         uint256 alicePostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(alice);
         uint256 contractPostBalBuyingToken = IERC20(address(erc1363WithSanction)).balanceOf(address(tokenSaleContract));
 
-        uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken ? (alicePostBalBuyingToken - alicePreBalBuyingToken) : (alicePreBalBuyingToken - alicePostBalBuyingToken);
-        uint256 changeInContractBalBuyingToken = contractPostBalBuyingToken > contractPreBalBuyingToken ? (contractPostBalBuyingToken - contractPreBalBuyingToken) : (contractPreBalBuyingToken - contractPostBalBuyingToken);
+        uint256 changeInAliceBalBuyingToken = alicePostBalBuyingToken > alicePreBalBuyingToken
+            ? (alicePostBalBuyingToken - alicePreBalBuyingToken)
+            : (alicePreBalBuyingToken - alicePostBalBuyingToken);
+        uint256 changeInContractBalBuyingToken = contractPostBalBuyingToken > contractPreBalBuyingToken
+            ? (contractPostBalBuyingToken - contractPreBalBuyingToken)
+            : (contractPreBalBuyingToken - contractPostBalBuyingToken);
 
+        assertEq(unwrap(tokenAmountOut), changeInAliceBalBuyingToken);
+        assertEq(unwrap(tokenAmountOut), changeInContractBalBuyingToken);
 
-        assertEq(unwrap(tokenAmountOut) , changeInAliceBalBuyingToken);
-        assertEq(unwrap(tokenAmountOut) , changeInContractBalBuyingToken);
-
-        assertEq(alicePostBalBuyingToken, 200e18 );
-        assertEq(contractPostBalBuyingToken, 800e18 );
-
+        assertEq(alicePostBalBuyingToken, 200e18);
+        assertEq(contractPostBalBuyingToken, 800e18);
 
         vm.stopPrank();
     }
-
-
 }

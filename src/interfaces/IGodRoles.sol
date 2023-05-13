@@ -2,7 +2,6 @@
 pragma solidity =0.8.19;
 
 interface IGodRoles {
-
     // ----------- Events -----------
 
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);
@@ -28,5 +27,4 @@ interface IGodRoles {
 
     function god() external view returns (address);
     function pendingGod() external view returns (address);
-
 }

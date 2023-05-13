@@ -10,25 +10,21 @@ import {GodRoles} from "@main/roles/GodRoles.sol";
 
 /**
  * @notice ERC1363 with god mode. It allows account with god role to transfer tokens between
-addresses at will.
-**/
+ * addresses at will.
+ *
+ */
 contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
-
     /**
      * @notice erc1363 with god mode constructor
      * @param _name token name for ERC1363
      * @param _symbol token symbol for ERC1363
-     * @param initialOwner account for initial owner 
+     * @param initialOwner account for initial owner
      * @param initialGod account for initial owner god
      */
-    constructor(
-        string memory _name,
-        string memory _symbol,
-        address  initialOwner,
-        address  initialGod
-        ) ERC20(_name, _symbol) GodRoles(initialOwner,initialGod){
-
-    }
+    constructor(string memory _name, string memory _symbol, address initialOwner, address initialGod)
+        ERC20(_name, _symbol)
+        GodRoles(initialOwner, initialGod)
+    {}
 
     modifier onlyOwner() {
         if (_owner != msg.sender) revert Errors.NotAuthorized(msg.sender);
@@ -43,10 +39,10 @@ contract ERC1363WithGodmode is IERC1363WithGodmode, ERC1363Base, GodRoles {
     /**
      * @notice transfer tokens between addresses at will
      * @return bool whether the trasfer is success or not
-    **/
-    function transferWithGodmode(address from, address to, uint256 amount) external onlyGod returns (bool)  {
+     *
+     */
+    function transferWithGodmode(address from, address to, uint256 amount) external onlyGod returns (bool) {
         _transfer(from, to, amount);
         return true;
     }
-
 }

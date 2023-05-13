@@ -10,11 +10,10 @@ import {IERC1363WithSanction} from "@main/interfaces/IERC1363WithSanction.sol";
 import {Errors} from "@main/shared/Error.sol";
 import {ERC1363WithSanction} from "@main/ERC1363WithSanction.sol";
 
-import {ConstantsFixture}  from "@test/unit/utils/ConstantsFixture.sol";
-import {DeploymentERC1363WithSanction}  from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
+import {ConstantsFixture} from "@test/unit/utils/ConstantsFixture.sol";
+import {DeploymentERC1363WithSanction} from "@test/unit/utils/ERC1363WithSanction.constructor.sol";
 
-contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363WithSanction {
-
+contract TestUnitERC1363WithSanction is ConstantsFixture, DeploymentERC1363WithSanction {
     event MinterSet(address indexed previousMinter, address indexed newMinter);
 
     event BlackListAdded(address indexed blacklist);
@@ -26,7 +25,7 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
         SCRIPTS_BYPASS = true; // deploys contracts without any checks whatsoever
     }
 
-    function setUp() public  virtual override {
+    function setUp() public virtual override {
         super.setUp();
         vm.label(address(this), "TestUnitERC1363WithSanction");
 
@@ -37,7 +36,8 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
         arg_erc1363WithSanction.initialOwner = msg.sender;
         arg_erc1363WithSanction.initialSanctionAdmin = msg.sender;
         arg_erc1363WithSanction.initialMinter = msg.sender;
-        erc1363WithSanction = IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup( arg_erc1363WithSanction ));
+        erc1363WithSanction =
+            IERC1363WithSanction(DeploymentERC1363WithSanction.deployAndSetup(arg_erc1363WithSanction));
 
         vm.label(address(erc1363WithSanction), "erc1363WithSanction");
 
@@ -51,11 +51,10 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
     }
 
     function test_mint() public {
-
         vm.startPrank(deployer);
 
-        vm.expectEmit(true,true,false,false);
-        emit MinterSet(deployer,dave);
+        vm.expectEmit(true, true, false, false);
+        emit MinterSet(deployer, dave);
         ISanctionRoles(address(erc1363WithSanction)).setMinter(dave);
 
         assertEq(ISanctionRoles(address(erc1363WithSanction)).minter(), dave);
@@ -64,18 +63,14 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
         vm.startPrank(dave);
 
         erc1363WithSanction.mint(dave, 1_000e18);
-        
-        assertEq(  IERC20(address(erc1363WithSanction)).balanceOf(dave), 1_000e18);
 
+        assertEq(IERC20(address(erc1363WithSanction)).balanceOf(dave), 1_000e18);
     }
-
 
     function test_RevertWhen_NotAuthorized_addToBlackList() public {
         vm.startPrank(alice);
 
-        vm.expectRevert(
-            abi.encodeWithSelector(Errors.NotAuthorized.selector, alice)
-        );
+        vm.expectRevert(abi.encodeWithSelector(Errors.NotAuthorized.selector, alice));
         erc1363WithSanction.addToBlackList(bob);
 
         vm.stopPrank();
@@ -84,55 +79,51 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
     function test_addToBlackList() public {
         vm.startPrank(deployer);
 
-        vm.expectEmit(true,false,false,false);
+        vm.expectEmit(true, false, false, false);
         emit BlackListAdded(bob);
         erc1363WithSanction.addToBlackList(bob);
         assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
 
-        deal({token : address(erc1363WithSanction), to: bob, give: 10 ether });
+        deal({token: address(erc1363WithSanction), to: bob, give: 10 ether});
         vm.startPrank(bob);
 
         uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, 10 ether);
-        
-        vm.expectRevert(
-            bytes("The caller is on the blacklist")
-        );
+
+        vm.expectRevert(bytes("The caller is on the blacklist"));
         IERC1363(address(erc1363WithSanction)).transferAndCall(carol, 2 ether);
 
         vm.stopPrank();
     }
 
     function testFuzz_addToBlackList(uint256 amount_to_send) public {
-        amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
+        amount_to_send = bound(amount_to_send, 0.5 ether, 10 ether);
 
         vm.startPrank(deployer);
 
-        vm.expectEmit(true,false,false,false);
+        vm.expectEmit(true, false, false, false);
         emit BlackListAdded(bob);
         erc1363WithSanction.addToBlackList(bob);
         assertEq(erc1363WithSanction.isBlacklist(bob), true);
 
         vm.stopPrank();
 
-        deal({token : address(erc1363WithSanction), to: bob, give: amount_to_send });
+        deal({token: address(erc1363WithSanction), to: bob, give: amount_to_send});
         vm.startPrank(bob);
 
         uint256 balance = IERC20(address(erc1363WithSanction)).balanceOf(bob);
         assertEq(balance, amount_to_send);
-        
-        vm.expectRevert(
-            bytes("The caller is on the blacklist")
-        );
+
+        vm.expectRevert(bytes("The caller is on the blacklist"));
         IERC1363(address(erc1363WithSanction)).transferAndCall(carol, amount_to_send);
 
         vm.stopPrank();
     }
 
     function testFuzz_removeFromBlackList(uint256 amount_to_send) public {
-        amount_to_send = bound( amount_to_send, 0.5 ether, 10 ether);
+        amount_to_send = bound(amount_to_send, 0.5 ether, 10 ether);
 
         vm.startPrank(deployer);
 
@@ -144,8 +135,4 @@ contract TestUnitERC1363WithSanction is  ConstantsFixture, DeploymentERC1363With
 
         vm.stopPrank();
     }
-
-
-
-
 }

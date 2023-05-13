@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity  =0.8.19;
+pragma solidity =0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1363} from "@openzeppelin/contracts/interfaces/IERC1363.sol";
@@ -14,26 +14,28 @@ import {Timed} from "@main/utils/Timed.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-import { UD60x18, ud, unwrap } from "@prb-math/UD60x18.sol";
-import { gte,isZero} from "@prb-math/ud60x18/Helpers.sol";
+import {UD60x18, ud, unwrap} from "@prb-math/UD60x18.sol";
+import {gte, isZero} from "@prb-math/ud60x18/Helpers.sol";
 
 abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializable, Pausable, Ownable2Step, Timed {
-
     using SafeERC20 for IERC20;
 
     /**
      * @notice the ERC20 token sale for this bonding curve
-    **/
-    IERC20 public override immutable token;
+     *
+     */
+    IERC20 public immutable override token;
 
     /**
      * @notice the total amount of sale token purchased on bonding curve
-    **/
+     *
+     */
     UD60x18 public override totalPurchased;
 
     /**
      * @notice the cap on how much sale token can be minted by the bonding curve
-    **/
+     *
+     */
     UD60x18 public override cap;
 
     /**
@@ -42,14 +44,12 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param _token ERC20 token sale out for this bonding curve
      * @param _duration duration to sell
      * @param _cap maximum token sold for this bonding curve to ensure security
-    **/
-    constructor(
-        IERC1363 _acceptedToken,
-        IERC20 _token,
-        uint256 _duration,
-        uint256 _cap
-        ) ERC1363PayableBase(_acceptedToken) Timed(_duration){
-
+     *
+     */
+    constructor(IERC1363 _acceptedToken, IERC20 _token, uint256 _duration, uint256 _cap)
+        ERC1363PayableBase(_acceptedToken)
+        Timed(_duration)
+    {
         token = _token;
         // start timer
         _initTimed();
@@ -59,11 +59,14 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
     /**
      * @notice init function to  be called after deployment
      * @dev must be atomic in one deployment script
-    **/
+     *
+     */
     function init() external override initializer {
         //deployer must approve token first
-        IERC20(token).safeTransferFrom(msg.sender, address(this), unwrap(cap) );
-        require( cap.eq(ud(IERC20(token).balanceOf(address(this)))) , "BondingCurve: must send Token to the contract first");
+        IERC20(token).safeTransferFrom(msg.sender, address(this), unwrap(cap));
+        require(
+            cap.eq(ud(IERC20(token).balanceOf(address(this)))), "BondingCurve: must send Token to the contract first"
+        );
     }
 
     /**
@@ -71,7 +74,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param to address to sale token
      * @param amountIn amount of underlying accepted tokens input
      *  @return amountOut amount of token sale received
-    **/
+     *
+     */
     function purchase(address to, uint256 amountIn)
         external
         payable
@@ -84,7 +88,7 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
         require(msg.value == 0, "BondingCurve: unexpected ETH input");
 
         amountOut = calculatePurchaseAmountOut(ud(amountIn));
-        
+
         acceptedToken().transferFromAndCall(to, address(this), amountIn);
 
         return amountOut;
@@ -94,7 +98,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @notice allocate held accepted ERC20 token
      * @param amount the amount quantity of underlying token  to allocate
      * @param to address destination
-    **/
+     *
+     */
     function allocate(uint256 amount, address to) external virtual override onlyOwner afterTime {
         SafeERC20.safeTransfer(acceptedToken(), to, amount);
         emit Allocate(msg.sender, ud(amount));
@@ -102,22 +107,24 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
     /**
      * @notice pause pausable function
-    **/
+     *
+     */
     function pause() external onlyOwner {
         _pause();
     }
 
     /**
      * @notice unpause pausable function
-    **/
+     *
+     */
     function unpause() external onlyOwner {
         _unpause();
     }
 
-
     /**
      * @notice returns how close to the cap we are
-    **/
+     *
+     */
     function availableToSell() public view override returns (UD60x18) {
         return cap.sub(totalPurchased);
     }
@@ -136,18 +143,15 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param tokenAmountIn the amount of underlying used to purchase
      * @return balanceAmountOut the amount of sale token received
      * @dev retained poolBalance (i.e. after including the next set of added tokensupply) minus current poolBalance
-    **/
-    function calculatePurchaseAmountOut(UD60x18 tokenAmountIn)
-        public
-        view
-        virtual
-        returns(UD60x18);
-
+     *
+     */
+    function calculatePurchaseAmountOut(UD60x18 tokenAmountIn) public view virtual returns (UD60x18);
 
     /**
      * @notice balance of accepted token the bonding curve
      * @return the amount of accepted token held in contract and ready to be allocated
-    **/
+     *
+     */
     function reserveBalance() public view virtual override returns (UD60x18) {
         return ud(acceptedToken().balanceOf(address(this)));
     }
@@ -158,7 +162,8 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      * @param operator The address which called `transferAndCall` or `transferFromAndCall` function
      * @param sender Address performing the token purchase
      * @param amount The amount of tokens transferred
-    **/
+     *
+     */
     function _transferReceived(address operator, address sender, uint256 amount, bytes memory) internal override {
         _purchase(operator, sender, amount);
     }
@@ -168,30 +173,30 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
      *  Note: remember that the token contract address is always the message sender.
      * @param sender address The address which called `approveAndCall` function
      * @param amount The amount of tokens to be spent
-    **/
-    function _approvalReceived(address sender, uint256 amount, bytes memory ) internal override {
+     *
+     */
+    function _approvalReceived(address sender, uint256 amount, bytes memory) internal override {
         IERC20(acceptedToken()).safeTransferFrom(sender, address(this), amount);
         _purchase(sender, sender, amount);
     }
 
-    function _purchase(address operator,  address to, uint256 tokenAmountIn)
+    function _purchase(address operator, address to, uint256 tokenAmountIn)
         internal
         returns (UD60x18 saleTokenAmountOut)
     {
         saleTokenAmountOut = calculatePurchaseAmountOut(ud(tokenAmountIn));
 
-        require( gte( availableToSell(), saleTokenAmountOut), "BondingCurve: exceeds cap");
+        require(gte(availableToSell(), saleTokenAmountOut), "BondingCurve: exceeds cap");
         _incrementTotalPurchased(saleTokenAmountOut);
-        IERC20(token).safeTransfer(to,unwrap(saleTokenAmountOut));
+        IERC20(token).safeTransfer(to, unwrap(saleTokenAmountOut));
 
-        emit Purchase(operator,to, ud(tokenAmountIn), saleTokenAmountOut);
+        emit Purchase(operator, to, ud(tokenAmountIn), saleTokenAmountOut);
         return saleTokenAmountOut;
     }
 
     function _incrementTotalPurchased(UD60x18 amount) internal {
         totalPurchased = totalPurchased.add(amount);
     }
-
 
     function _setCap(UD60x18 newCap) internal {
         if (isZero(newCap)) revert Errors.ZeroNumberNotAllowed();
@@ -201,5 +206,4 @@ abstract contract BondingCurve is IBondingCurve, ERC1363PayableBase, Initializab
 
         emit CapUpdate(oldCap, newCap);
     }
-
 }

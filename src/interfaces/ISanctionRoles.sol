@@ -2,7 +2,6 @@
 pragma solidity =0.8.19;
 
 interface ISanctionRoles {
-
     // ----------- Events -----------
 
     event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner);

@@ -4,8 +4,6 @@ pragma solidity =0.8.19;
 import {ERC1363WithGodmodeSetupScript} from "./2-1_SetupERC1363WithGodmode.sol";
 
 contract ONE_deployERC1363WithGodmode is ERC1363WithGodmodeSetupScript {
-
-
     function setUpScripts() internal override {
         // We only want to attach existing contracts.
         // Though if everything is up-to-date, this should be redundant and not needed.
@@ -21,10 +19,7 @@ contract ONE_deployERC1363WithGodmode is ERC1363WithGodmodeSetupScript {
         SCRIPTS_MOCK_ADDRESS = false; // doesn't use contracts addresses from mainnet
     }
 
-
-
     function run() external {
-
         // will run `vm.startBroadcast();` if ffi is enabled
         // ffi is required for running storage layout compatibility checks
         // if ffi is disabled, it will enter "dry-run" and
@@ -37,13 +32,12 @@ contract ONE_deployERC1363WithGodmode is ERC1363WithGodmodeSetupScript {
         // we don't need broadcast from here on
         vm.stopBroadcast();
 
-        if(SCRIPTS_MOCK_ADDRESS) unitTest_Deployment(); // run an "unit test"
+        if (SCRIPTS_MOCK_ADDRESS) unitTest_Deployment(); // run an "unit test"
+
         else integrationTest_Deployment(); // run an "integration test"
 
         // console.log and store these in `deployments/` (if not in dry-run)
         storeLatestDeployments();
         savePastDeployments();
     }
-
-
 }

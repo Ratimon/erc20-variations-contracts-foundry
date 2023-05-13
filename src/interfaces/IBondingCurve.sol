@@ -2,7 +2,7 @@
 pragma solidity =0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { UD60x18, ud } from "@prb-math/UD60x18.sol";
+import {UD60x18, ud} from "@prb-math/UD60x18.sol";
 
 interface IBondingCurve {
     // ----------- Events -----------
@@ -11,14 +11,11 @@ interface IBondingCurve {
 
     event Purchase(address indexed operator, address indexed to, UD60x18 amountIn, UD60x18 amountOut);
 
-    event Allocate( address indexed caller, UD60x18 amount);
+    event Allocate(address indexed caller, UD60x18 amount);
 
     // ----------- State changing Api -----------
 
-    function purchase(address to, uint256 amountIn)
-        external
-        payable
-        returns (UD60x18 amountOut);
+    function purchase(address to, uint256 amountIn) external payable returns (UD60x18 amountOut);
 
     // ----------- Governor only state changing api -----------
 
@@ -34,10 +31,7 @@ interface IBondingCurve {
 
     function getCurrentPrice(UD60x18 tokenSupply) external view returns (UD60x18);
 
-    function calculatePurchaseAmountOut(UD60x18 tokenAmountIn)
-        external
-        view
-        returns (UD60x18 balanceAmountOut);
+    function calculatePurchaseAmountOut(UD60x18 tokenAmountIn) external view returns (UD60x18 balanceAmountOut);
 
     function totalPurchased() external view returns (UD60x18);
 
@@ -48,5 +42,4 @@ interface IBondingCurve {
     function reserveBalance() external view returns (UD60x18);
 
     function token() external view returns (IERC20);
-
 }
